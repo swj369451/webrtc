@@ -5,24 +5,25 @@
 import { getUserMeida, stream } from "../media/UserMedia.js";
 import { sendCandidateTransportAddresses } from "../negotiation/CandidateNegotiate.js";
 import { communicationNegotiate, MeidaNegotiationOffer } from "../negotiation/CommunicationNegotiate.js"
+import { createMediaFormatOffer } from "../negotiation/MediaNegotiation.js";
+import { reportInfo } from "../report/report.js";
 import { socket } from "../signing/Signing.js";
-import { addVideo, getVideoTag } from "../tagTool.js";
+import { addVideo, createVideoTag, deleteVideoTag, getVideoTag } from "../tagTool.js";
 
 /**
  * 连接配置
  */
 let serverConfig = {
+    "bundlePolicy": "max-bundle",
     "iceServers": [
         {
-            "urls": [
-                "stun:101.35.181.216",
-            ]
+            "urls": "stun:101.35.181.216"
         },
-        { "url": "turn:101.35.181.216", username: "test", credential: "123456" }
+        { "urls": "turn:101.35.181.216", username: "test", credential: "123" }
     ]
 };
 let PeerConnectionList = new Map();
-window.PeerConnections=PeerConnectionList;
+window.PeerConnections = PeerConnectionList;
 /**
  * 建立通信连接
  */
@@ -55,6 +56,7 @@ async function createPeerConnector(peerId) {
 
     await addRTCPeerConnectEvent(pc, peerId);
     pc.to = peerId;
+    return pc;
 }
 
 /**
@@ -70,8 +72,15 @@ function addRTCPeerConnectEvent(pc, socketId) {
     pc.oniceconnectionstatechange = function (event) { handleiceconnectionstatechange(event, socketId); };
     pc.onicecandidateerror = function (event) { handleicecandidateerror(event, socketId); };
     pc.onconnectionstatechange = function (event) { handleconnectionstatechange(event, socketId); }
+    pc.negotiationneeded = function (event) { handlenegotiationneeded(event, socketId); }
 
     // pc.onnegotiationneeded = function (event) { handleNegotiationneeded(event, socketId); };
+    pc.ontrack = ({ track, streams }) => {
+        console.log(1);
+    }
+}
+function handlenegotiationneeded(event, socketId) {
+    console.log();
 }
 function handleicecandidateerror(event, socketId) {
     console.log(event, socketId);
@@ -95,23 +104,54 @@ function handleIceCandidate(event, from) {
 }
 
 function handleconnectionstatechange(event, from) {
-    // if (event.currentTarget.iceConnectionState === "disconnected") {
+    // let flag=false;
+    // event.currentTarget.getReceivers().forEach(function(receiver){
+
+    //     if(receiver.transport.iceTransport.state=="disconnected"){
+    //         flag=true;
+    //     }else{
+    //         flag=false;
+    //     }
+    // })
+
+    if (event.currentTarget.iceConnectionState === "disconnected") {
+        setTimeout(() => {
+            if (event.currentTarget.iceConnectionState === "disconnected") {
+                createMediaFormatOffer(event.currentTarget);
+                console.log(`【重连ice】重新与${from}连接ice`)
+
+                setTimeout(() => {
+                    if (event.currentTarget.signalingState === "have-local-offer") {
+                        close(from);
+                        
+                    }
+                }, 5000);
+            }
+        }, 10000);
+    }
+
+
+    // if ((event.currentTarget.iceConnectionState === "disconnected" && flag) ||event.currentTarget.iceConnectionState === "failed") {
     //     PeerConnectionList.delete(from);
-    //     removeVideoTag(from);
+    //     // removeVideoTag(from);
+    //     deleteVideoTag(from);
     // }
-    // if (event.currentTarget.iceConnectionState === "failed") {
-    //     PeerConnectionList.delete(from);
-    //     removeVideoTag(from);
-    // }
+    if (event.currentTarget.iceConnectionState === "failed") {
+        close(from);
+        // PeerConnectionList.get(from).close();
+        // PeerConnectionList.delete(from);
+        // // removeVideoTag(from);
+        // deleteVideoTag(from);
+    }
 }
 
-function handleRemoteStreamAdded(event, form) {
+async function handleRemoteStreamAdded(event, form) {
     console.log('Remote stream added.');
-    addVideo(form)
-    let videoTag = getVideoTag(form);
+
+    let videoTag = createVideoTag(form);
     videoTag.srcObject = event.stream;
-    // console.log(event.stream.getVideoTracks());
-    // console.log(event.stream.getAudioTracks());
+
+    reportInfo(event.currentTarget, form)
 }
 
 function handleRemoteStreamRemoved(event, from) {
@@ -130,5 +170,11 @@ function handleiceconnectionstatechange(event, from) {
     //     removeVideoTag(from);
     // }
 }
+function close(targetId){
+    console.log(`【对方掉线】${targetId}已掉线`)
+    PeerConnectionList.get(targetId).close();
+    PeerConnectionList.delete(targetId);
+    deleteVideoTag(targetId);
+}
 
-export { establishCommunicationConntor, manJoined, createPeerConnector, PeerConnectionList }
+export { establishCommunicationConntor, manJoined, createPeerConnector, PeerConnectionList, serverConfig }

@@ -56,6 +56,7 @@ function connectSocketServer() {
             receiveMediaFormatAnswer(message);
         } else if (message.type === 'candidate') {
             collectCandidateTransportAddresses(message);
+            console.log(`【收到的ice】=${message.candidate}`)
         } else if (message === 'bye') {
             // handleRemoteHangup();
         }

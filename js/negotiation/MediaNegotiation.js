@@ -7,6 +7,7 @@ import { sendMessage, socket } from "../signing/Signing.js";
 
 
 const offerOptions = {
+    iceRestart:true,
     offerToReceiveAudio: 1,
     offerToReceiveVideo: 1
 };
