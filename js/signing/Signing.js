@@ -71,4 +71,4 @@ function sendMessage(message) {
 
 
 
-export { joinCommunicationRoom,sendMessage,socket }
+export { joinCommunicationRoom, sendMessage, socket }

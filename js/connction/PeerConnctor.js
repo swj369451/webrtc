@@ -117,13 +117,14 @@ function handleconnectionstatechange(event, from) {
     if (event.currentTarget.iceConnectionState === "disconnected") {
         setTimeout(() => {
             if (event.currentTarget.iceConnectionState === "disconnected") {
-                createMediaFormatOffer(event.currentTarget);
+                // createMediaFormatOffer(event.currentTarget);
+                createMediaFormatOffer(event.currentTarget,"renegotiate");
                 console.log(`【重连ice】重新与${from}连接ice`)
 
                 setTimeout(() => {
                     if (event.currentTarget.signalingState === "have-local-offer") {
                         close(from);
-                        
+
                     }
                 }, 5000);
             }
@@ -170,7 +171,7 @@ function handleiceconnectionstatechange(event, from) {
     //     removeVideoTag(from);
     // }
 }
-function close(targetId){
+function close(targetId) {
     console.log(`【对方掉线】${targetId}已掉线`)
     PeerConnectionList.get(targetId).close();
     PeerConnectionList.delete(targetId);
