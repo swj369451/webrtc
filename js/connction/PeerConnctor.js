@@ -38,10 +38,12 @@ function establishCommunicationConntor() {
 async function manJoined(room, peerId) {
     console.log(`【${peerId}】连接：接收到成员加入【${room}】房间`)
     //创建连接器
-    await createPeerConnector(peerId);
+    let pc = await createPeerConnector(peerId);
+
+    // let pc = PeerConnectionList.get(peerId)
 
     //发起媒体协商提议
-    await MeidaNegotiationOffer(PeerConnectionList.get(peerId));
+    await MeidaNegotiationOffer(pc);
 }
 
 /**
@@ -173,9 +175,14 @@ function handleiceconnectionstatechange(event, from) {
 }
 function close(targetId) {
     console.log(`【对方掉线】${targetId}已掉线`)
-    PeerConnectionList.get(targetId).close();
-    PeerConnectionList.delete(targetId);
-    deleteVideoTag(targetId);
+    let pc = PeerConnectionList.get(targetId);
+    if(pc!=undefined){
+        pc.close();
+        PeerConnectionList.delete(targetId);
+        deleteVideoTag(targetId);
+    }
+    
+    
 }
 
 export { establishCommunicationConntor, manJoined, createPeerConnector, PeerConnectionList, serverConfig }

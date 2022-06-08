@@ -13,12 +13,22 @@ import { sendMessage } from "../signing/Signing.js";
  */
 function collectCandidateTransportAddresses(message) {
     console.log(`【${message.from}】连接：接收候选传输地址`);
+
     let pc = PeerConnectionList.get(message.from);
-    var candidate = new RTCIceCandidate({
-        sdpMLineIndex: message.label,
-        candidate: message.candidate
-    });
-    pc.addIceCandidate(candidate);
+    if (pc != undefined) {
+        var candidate = new RTCIceCandidate({
+            sdpMLineIndex: message.label,
+            candidate: message.candidate
+        });
+        pc.addIceCandidate(candidate).then(data => {
+
+        }, error => {
+            console.log(`【添加ice错误】` + error)
+        });
+    }
+
+
+
 }
 function sendCandidateTransportAddresses(candidate) {
     // console.log(`【${message.from}】连接：接收候选传输地址`);

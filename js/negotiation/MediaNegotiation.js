@@ -21,14 +21,14 @@ async function createMediaFormatOffer(pc, renegotiate) {
 
         const offer = await pc.createOffer(offerOptions);
 
-        await onCreateOfferSuccess(pc, offer,renegotiate);
+        await onCreateOfferSuccess(pc, offer, renegotiate);
         console.log(`【${pc.to}】连接：创建完成媒体格式提议`);
     } catch (e) {
         console.log(e);
     }
 }
 
-async function onCreateOfferSuccess(pc, desc,renegotiate) {
+async function onCreateOfferSuccess(pc, desc, renegotiate) {
 
     console.log(`Offer from pc1\n${desc.sdp}`);
 
@@ -83,17 +83,20 @@ function createMediaFormatAnswer(pc) {
 async function receiveMediaFormatOffer(message) {
     console.log(`【${message.from}】连接：接收媒体格式提议`);
 
-    if (message.renegotiate!=="renegotiate") {
+    if (message.renegotiate !== "renegotiate") {
         await createPeerConnector(message.from);
     }
 
+    let pc = PeerConnectionList.get(message.from);
+    if (pc != undefined) {
+        //设置远程媒体格式
+        setRemoteMediaFormat(PeerConnectionList.get(message.from), message);
+
+        //创建媒体格式应答
+        createMediaFormatAnswer(PeerConnectionList.get(message.from))
+    }
 
 
-    //设置远程媒体格式
-    setRemoteMediaFormat(PeerConnectionList.get(message.from), message);
-
-    //创建媒体格式应答
-    createMediaFormatAnswer(PeerConnectionList.get(message.from))
 }
 /**
  * 接收媒体格式应答
@@ -104,21 +107,32 @@ async function receiveMediaFormatAnswer(message) {
 
     let pc = PeerConnectionList.get(message.from);
     //设置远程媒体格式
-    setRemoteMediaFormat(pc, message);
+    if (pc !== undefined) {
+        setRemoteMediaFormat(pc, message);
+    }
+
 }
 /**
  * 设置本地媒体格式
  */
 async function setLocalMediaFormat(pc, desc) {
     console.log(`【${pc.to}】连接：设置本地媒体格式`);
-    await pc.setLocalDescription(new RTCSessionDescription(desc));
+    await pc.setLocalDescription(new RTCSessionDescription(desc)).then(data => {
+
+    }, error => {
+        console.log(`【添加本地sdp错误】` + error)
+    });
 }
 /**
  * 设置远程媒体格式
  */
 function setRemoteMediaFormat(pc, message) {
     console.log(`【${pc.to}】连接：设置远程媒体格式`);
-    pc.setRemoteDescription(new RTCSessionDescription(message));
+    pc.setRemoteDescription(new RTCSessionDescription(message)).then(data => {
+
+    }, error => {
+        console.log(`【添加远程sdp错误】` + error)
+    });
 }
 
 

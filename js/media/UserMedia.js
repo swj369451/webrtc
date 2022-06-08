@@ -49,6 +49,8 @@ function handleError(error) {
             'microphone, you need to allow the page access to your devices in ' +
             'order for the demo to work.');
     } else if (error.name === 'NotReadableError') {
+        let error = document.getElementById("errorNote")
+        error.innerHTML="【硬件错误】摄像头被占用";
         console.error(`【硬件错误】摄像头被占用`);
     }
     errorMsg(`getUserMedia error: ${error.name}`, error);

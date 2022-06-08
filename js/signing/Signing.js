@@ -17,7 +17,7 @@ function joinCommunicationRoom() {
     if (socket == undefined) {
         connectSocketServer();
     }
-    socket.emit('create or join', room);
+    
 }
 
 /**
@@ -28,6 +28,7 @@ function connectSocketServer() {
 
     socket.on('connect', function () {
         console.log("socket服务器连接成功");
+        socket.emit('create or join', room);
     });
 
     socket.on('created', function (room) {

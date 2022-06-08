@@ -2,16 +2,6 @@ import { createPeerConnector } from "./connction/PeerConnctor.js";
 import { getUserMeida } from "./media/UserMedia.js";
 import { connctP2PAudioVideoMediaChat } from "./MediaCommunication.js";
 
-// let serverConfig = {
-//     "bundlePolicy": "max-bundle",
-//     "iceServers": [
-//         {
-//             "urls": "stun:101.35.181.216"
-//         },
-//         { "urls": "turn:101.35.181.216", username: "test", credential: "123456" }
-//     ]
-// };
-
 async function init() {
     let userMediaSteam = await getUserMeida();
     document.querySelector('video').srcObject = userMediaSteam
@@ -19,13 +9,10 @@ async function init() {
     //连接端到端音视频通话
     connctP2PAudioVideoMediaChat();
 
-    // let pc = await createPeerConnector("test");
-    // pc.createOffer(serverConfig);
-
 }
 
 let videoBtn = document.getElementById("videoBtn");
-videoBtn.addEventListener('click', function (event) {
+videoBtn.addEventListener('click', function(event) {
     let text = event.currentTarget.innerText;
     let changeText = "";
     let flag = true;
@@ -39,19 +26,18 @@ videoBtn.addEventListener('click', function (event) {
     }
 
     event.currentTarget.innerText = changeText;
-    window.PeerConnections.forEach(function (ps) {
-        ps.getSenders().forEach(function (sender) {
+    window.PeerConnections.forEach(function(ps) {
+        ps.getSenders().forEach(function(sender) {
             if (sender.track.kind === "video") {
                 sender.track.enabled = flag;
             }
         })
-    }
-    )
+    })
 
 });
 
 let audioBtn = document.getElementById("audioBtn");
-audioBtn.addEventListener('click', function (event) {
+audioBtn.addEventListener('click', function(event) {
     let text = event.currentTarget.innerText;
     let changeText = "";
     let flag = true;
@@ -64,20 +50,19 @@ audioBtn.addEventListener('click', function (event) {
     }
 
     event.currentTarget.innerText = changeText;
-    window.PeerConnections.forEach(function (ps) {
-        ps.getSenders().forEach(function (sender) {
+    window.PeerConnections.forEach(function(ps) {
+        ps.getSenders().forEach(function(sender) {
             if (sender.track.kind === "audio") {
                 sender.track.enabled = flag;
             }
         })
-    }
-    )
+    })
 
 });
 
 let iceBtn = document.getElementById("iceBtn");
 let container = document.getElementById("container");
-iceBtn.addEventListener('click', function (event) {
+iceBtn.addEventListener('click', function(event) {
     let text = event.currentTarget.innerText;
     let changeText = "";
     let flag = 'block';
@@ -90,11 +75,9 @@ iceBtn.addEventListener('click', function (event) {
     }
 
     event.currentTarget.innerText = changeText;
-    container.setAttribute("style",`display:${flag};`)
+    container.setAttribute("style", `display:${flag};`)
 
 });
 
 
 init();
-
-
