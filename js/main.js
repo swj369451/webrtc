@@ -1,4 +1,3 @@
-import { createPeerConnector } from "./connction/PeerConnctor.js";
 import { getUserMeida } from "./media/UserMedia.js";
 import { connctP2PAudioVideoMediaChat } from "./MediaCommunication.js";
 

@@ -49,6 +49,7 @@ async function onCreateOfferSuccess(pc, desc, renegotiate) {
     }
 
 }
+
 function onCreateSessionDescriptionError(error) {
     console.log(`Failed to create session description: ${error.toString()}`);
 }
@@ -60,7 +61,7 @@ function onCreateSessionDescriptionError(error) {
 function createMediaFormatAnswer(pc) {
     console.log(`【${pc.to}】连接：创建媒体格式应答`);
     pc.createAnswer().then(
-        function (event) {
+        function(event) {
             setLocalMediaFormat(pc, event);
 
             console.log(`【${pc.to}】连接：发送媒体格式应答`);
@@ -70,8 +71,7 @@ function createMediaFormatAnswer(pc) {
                 from: socket.id,
                 to: pc.to
             });
-        }
-        ,
+        },
         onCreateSessionDescriptionError
     );
 }
@@ -90,10 +90,10 @@ async function receiveMediaFormatOffer(message) {
     let pc = PeerConnectionList.get(message.from);
     if (pc != undefined) {
         //设置远程媒体格式
-        setRemoteMediaFormat(PeerConnectionList.get(message.from), message);
+        setRemoteMediaFormat(pc, message);
 
         //创建媒体格式应答
-        createMediaFormatAnswer(PeerConnectionList.get(message.from))
+        createMediaFormatAnswer(pc)
     }
 
 
@@ -118,7 +118,7 @@ async function receiveMediaFormatAnswer(message) {
 async function setLocalMediaFormat(pc, desc) {
     console.log(`【${pc.to}】连接：设置本地媒体格式`);
     await pc.setLocalDescription(new RTCSessionDescription(desc)).then(data => {
-
+        console.log();
     }, error => {
         console.log(`【添加本地sdp错误】` + error)
     });

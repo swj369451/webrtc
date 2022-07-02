@@ -27,12 +27,15 @@ async function getUserMeida() {
         handleError(e);
     }
 }
+
 function handleSuccess(stream) {
     const videoTracks = stream.getVideoTracks();
     const audioTracks = stream.getAudioTracks();
     console.log('Got stream with constraints:', constraints);
-    console.log(`Using video device: 【${videoTracks[0]?.label}】,enabled：【${videoTracks[0]?.enabled}】,muted：【${videoTracks[0]?.muted}】`);
-    console.log(`Using audio device: 【${audioTracks[0]?.label}】,enabled：【${audioTracks[0]?.enabled}】,muted：【${audioTracks[0]?.muted}】`);
+    if (videoTracks[0] != null && audioTracks[0] != null) {
+        console.log(`Using video device: 【${videoTracks[0].label}】,enabled：【${videoTracks[0].enabled}】,muted：【${videoTracks[0].muted}】`);
+        console.log(`Using audio device: 【${audioTracks[0].label}】,enabled：【${audioTracks[0].enabled}】,muted：【${audioTracks[0].muted}】`);
+    }
 
     // videoTracks[0].onmute = function (e) {
     //     console.log("onmute", e);
@@ -41,6 +44,9 @@ function handleSuccess(stream) {
 }
 
 function handleError(error) {
+    let errorNode = document.getElementById("errorNote")
+    errorNode.innerHTML = "【媒体错误】" + error.name;
+
     if (error.name === 'OverconstrainedError') {
         const v = constraints.video;
         errorMsg(`The resolution ${v.width.exact}x${v.height.exact} px is not supported by your device.`);
@@ -49,8 +55,7 @@ function handleError(error) {
             'microphone, you need to allow the page access to your devices in ' +
             'order for the demo to work.');
     } else if (error.name === 'NotReadableError') {
-        let error = document.getElementById("errorNote")
-        error.innerHTML="【硬件错误】摄像头被占用";
+        errorNode.innerHTML = "【硬件错误】摄像头被占用";
         console.error(`【硬件错误】摄像头被占用`);
     }
     errorMsg(`getUserMedia error: ${error.name}`, error);
