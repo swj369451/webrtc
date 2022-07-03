@@ -30,6 +30,14 @@ function establishCommunicationConntor() {
     console.log(`建立通信连接`)
     communicationNegotiate();
 }
+/**
+ * 建立屏幕共享连接
+ */
+function establishConnector(stream) {
+    console.log(`建立通信连接器`)
+    let track = stream.getVideoTracks()[0];
+    PeerConnectionList.get(PeerConnectionList.keys().next().value).addTrack(track);
+}
 
 /**
  * 成员加入
@@ -49,7 +57,7 @@ async function manJoined(room, peerId) {
  * 创建连接器
  */
 async function createPeerConnector(peerId) {
-    console.log(`【${peerId}】连接：建立与连接方的端到端连接器`) ///.
+    console.log(`【${peerId}】连接：建立与连接方的端到端连接器`);
     let pc = new RTCPeerConnection(serverConfig);
     PeerConnectionList.set(peerId, pc)
     let userSteam = await getUserMeida();
@@ -150,7 +158,7 @@ async function handleRemoteStreamAdded(event, form) {
     let videoTag = createVideoTag(form);
     videoTag.srcObject = event.stream;
 
-    reportInfo(event.currentTarget, form)
+    // reportInfo(event.currentTarget, form)
 }
 
 function handleRemoteStreamRemoved(event, from) {
@@ -182,4 +190,4 @@ function close(targetId) {
 
 }
 
-export { establishCommunicationConntor, manJoined, createPeerConnector, PeerConnectionList, serverConfig }
+export { establishCommunicationConntor, manJoined, createPeerConnector, PeerConnectionList, serverConfig, establishConnector }

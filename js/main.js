@@ -1,82 +1,31 @@
+/*
+ * @Author: swj369451 swj369451@163.com
+ * @Date: 2022-05-27 17:01:14
+ * @LastEditors: swj369451 swj369451@163.com
+ * @LastEditTime: 2022-07-03 14:43:46
+ * @FilePath: \webrtc\js\main.js
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
+import { showControls } from "./controls/CommunicationControl.js";
 import { getUserMeida } from "./media/UserMedia.js";
 import { connctP2PAudioVideoMediaChat } from "./MediaCommunication.js";
+import { castScreenStream } from "./screen/screensharing.js";
 
 async function init() {
+    //展示本地摄像头到屏幕
     let userMediaSteam = await getUserMeida();
     document.querySelector('video').srcObject = userMediaSteam
 
     //连接端到端音视频通话
     connctP2PAudioVideoMediaChat();
 
+    //展示通信控件
+    showControls();
+
+    //展示屏幕共享
+    let screenVideo = document.getElementById('screen-video');
+    castScreenStream(screenVideo);
+
 }
-
-let videoBtn = document.getElementById("videoBtn");
-videoBtn.addEventListener('click', function(event) {
-    let text = event.currentTarget.innerText;
-    let changeText = "";
-    let flag = true;
-    if (text === "关闭画面") {
-        changeText = "开启画面";
-        flag = false;
-
-    } else {
-        changeText = "关闭画面";
-        flag = true;
-    }
-
-    event.currentTarget.innerText = changeText;
-    window.PeerConnections.forEach(function(ps) {
-        ps.getSenders().forEach(function(sender) {
-            if (sender.track.kind === "video") {
-                sender.track.enabled = flag;
-            }
-        })
-    })
-
-});
-
-let audioBtn = document.getElementById("audioBtn");
-audioBtn.addEventListener('click', function(event) {
-    let text = event.currentTarget.innerText;
-    let changeText = "";
-    let flag = true;
-    if (text === "关闭声音") {
-        changeText = "开启声音";
-        flag = false;
-    } else {
-        changeText = "关闭声音";
-        flag = true;
-    }
-
-    event.currentTarget.innerText = changeText;
-    window.PeerConnections.forEach(function(ps) {
-        ps.getSenders().forEach(function(sender) {
-            if (sender.track.kind === "audio") {
-                sender.track.enabled = flag;
-            }
-        })
-    })
-
-});
-
-let iceBtn = document.getElementById("iceBtn");
-let container = document.getElementById("container");
-iceBtn.addEventListener('click', function(event) {
-    let text = event.currentTarget.innerText;
-    let changeText = "";
-    let flag = 'block';
-    if (text === "隐藏ice信息") {
-        changeText = "显示ice信息";
-        flag = 'none';
-    } else {
-        changeText = "隐藏ice信息";
-        flag = 'block';
-    }
-
-    event.currentTarget.innerText = changeText;
-    container.setAttribute("style", `display:${flag};`)
-
-});
-
 
 init();
