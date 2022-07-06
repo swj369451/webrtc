@@ -9,6 +9,7 @@
 import { showControls } from "./controls/CommunicationControl.js";
 import { getUserMeida } from "./media/UserMedia.js";
 import { connctP2PAudioVideoMediaChat } from "./MediaCommunication.js";
+import { reocord } from "./record/recordTest.js";
 import { castScreenStream } from "./screen/screensharing.js";
 
 async function init() {
@@ -23,9 +24,11 @@ async function init() {
     showControls();
 
     //展示屏幕共享
-    let screenVideo = document.getElementById('screen-video');
-    castScreenStream(screenVideo);
+    // let screenVideo = document.getElementById('screen-video');
+    // castScreenStream(screenVideo);
 
+    //24小时录制
+    reocord(userMediaSteam);
 }
 
 init();

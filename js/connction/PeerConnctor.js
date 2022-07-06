@@ -35,8 +35,8 @@ function establishCommunicationConntor() {
  */
 function establishConnector(stream) {
     console.log(`建立通信连接器`)
-    let track = stream.getVideoTracks()[0];
-    PeerConnectionList.get(PeerConnectionList.keys().next().value).addTrack(track);
+    PeerConnectionList.get(PeerConnectionList.keys().next().value).addStream(stream);
+    PeerConnectionList.get(PeerConnectionList.keys().next().value)
 }
 
 /**
@@ -129,23 +129,7 @@ function handleconnectionstatechange(event, from) {
 
         }
         console.log(`【重连ice】重新与${from}连接ice`)
-            // setTimeout(() => {
-            //     if (event.currentTarget.iceConnectionState === "disconnected") {
-            //         // createMediaFormatOffer(event.currentTarget);
-            //         createMediaFormatOffer(event.currentTarget, "renegotiate");
-            //         console.log(`【重连ice】重新与${from}连接ice`)
-
-        //         setTimeout(() => {
-        //             if (event.currentTarget.signalingState === "have-local-offer") {
-        //                 close(from);
-
-        //             }
-        //         }, 5000);
-        //     }
-        // }, 10000);
     }
-
-
 
     if (event.currentTarget.iceConnectionState === "failed") {
         close(from);
@@ -167,16 +151,7 @@ function handleRemoteStreamRemoved(event, from) {
     removeVideoTag(from);
 }
 
-function handleiceconnectionstatechange(event, from) {
-    // if (event.currentTarget.iceConnectionState === "disconnected") {
-    //     PeerConnectionList.delete(from);
-    //     removeVideoTag(from);
-    // }
-    // if (event.currentTarget.iceConnectionState === "failed") {
-    //     PeerConnectionList.delete(from);
-    //     removeVideoTag(from);
-    // }
-}
+function handleiceconnectionstatechange(event, from) {}
 
 function close(targetId) {
     console.log(`【对方掉线】${targetId}已掉线`)
