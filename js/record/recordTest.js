@@ -13,6 +13,8 @@ let recordedEndTimeB;
 //切换缓存
 let flagA = true;
 let mediaRecorder;
+let firstBlob;
+let init = false;
 
 //录制切片
 let timeslice = 1000;
@@ -46,10 +48,13 @@ function reocord(stream) {
 
     //切换视频缓存
     recordInterval = setInterval(() => {
-
+        if (!init) {
+            firstBlob = recordedBlobsA[0];
+        }
         if (flagA) {
             console.debug(`【视频录制】切换A组缓存,blob大小${recordedBlobsA.length},时间${recordedStartTimeA}`);
             recordedBlobsB = [];
+            recordedBlobsB.push(firstBlob)
             recordedStartTimeB = null;
             recordedEndTimeB = null;
             downloadBlob(recordedBlobsA, recordedStartTimeA);
@@ -58,6 +63,7 @@ function reocord(stream) {
         } else {
             console.debug(`【视频录制】切换B组缓存,blob大小${recordedBlobsB.length},时间${recordedStartTimeB}`);
             recordedBlobsA = [];
+            recordedBlobsA.push(firstBlob)
             recordedStartTimeA = null;
             recordedEndTimeA = null;
             downloadBlob(recordedBlobsB, recordedStartTimeB);
