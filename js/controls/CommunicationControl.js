@@ -1,4 +1,5 @@
 import { sharingScreen } from "../MediaCommunication.js";
+import { roomNumber } from "../signing/Signing.js";
 
 /**
  * 展示控件
@@ -83,7 +84,7 @@ function initScreensharing() {
         let btnName;
         if (event.currentTarget.innerText === "开启屏幕共享") {
             btnName = "关闭屏幕共享";
-            sharingScreen(11);
+            sharingScreen(roomNumber);
         } else {
             btnName = "开启屏幕共享"
         }

@@ -2,11 +2,10 @@
 
 // Put variables in global scope to make them available to the browser console.
 const constraints = {
-    audio: true,
+    audio: false,
     video: true
 };
 let stream;
-
 
 async function getUserMeida() {
     try {
@@ -36,11 +35,6 @@ function handleSuccess(stream) {
         console.log(`Using video device: 【${videoTracks[0].label}】,enabled：【${videoTracks[0].enabled}】,muted：【${videoTracks[0].muted}】`);
         console.log(`Using audio device: 【${audioTracks[0].label}】,enabled：【${audioTracks[0].enabled}】,muted：【${audioTracks[0].muted}】`);
     }
-
-    // videoTracks[0].onmute = function (e) {
-    //     console.log("onmute", e);
-    // }
-    // window.stream = stream; // make variable available to browser console
 }
 
 function handleError(error) {
@@ -62,8 +56,6 @@ function handleError(error) {
 }
 
 function errorMsg(msg, error) {
-    // const errorElement = document.querySelector('#errorMsg');
-    // errorElement.innerHTML += `<p>${msg}</p>`;
     console.error(`获取音视频流失败${msg}`);
     if (typeof error !== 'undefined') {
         console.error(error);

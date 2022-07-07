@@ -24,24 +24,30 @@ async function castScreenStream(VideoLabel) {
 
 }
 
-function handleSuccess(stream) {
-    screenStream = stream;
-}
-
-function handleError(error) {
-    console.error(`getDisplayMedia error: ${error.name}`, error);
-}
-
 /**
  * 获取屏幕流
  */
 async function getScreenStream() {
-    if (screenStream != undefined && screenStream != null) {
-        return screenStream;
+    if (screenStream == undefined || screenStream == null) {
+        await navigator.mediaDevices.getDisplayMedia(screensharingConfig)
+            .then(handleSuccess, handleError);
     }
-    await navigator.mediaDevices.getDisplayMedia(screensharingConfig)
-        .then(handleSuccess, handleError);
+
+    return screenStream;
 
 }
-
+/**
+ * 处理成功获取屏幕流事件
+ * @param {*} stream 
+ */
+function handleSuccess(stream) {
+    screenStream = stream;
+}
+/**
+ * 处理获取屏幕流失败事件
+ * @param {*} error 
+ */
+function handleError(error) {
+    console.error(`getDisplayMedia error: ${error.name}`, error);
+}
 export { castScreenStream, getScreenStream }

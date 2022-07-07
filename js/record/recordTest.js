@@ -22,6 +22,7 @@ let timeslice = 1000;
 //保存视频时长
 let recordDuration = 1000 * 5;
 
+//保存视频定时器
 let recordInterval;
 
 /**
@@ -124,7 +125,7 @@ function downloadBlob(blobs, fileName) {
     const a = document.createElement('a');
     a.style.display = 'none';
     a.href = url;
-    a.download = `${fileName.toLocaleDateString()} - 3${fileName.toLocaleTimeString()}`;
+    a.download = `${fileName.toLocaleDateString()} - ${fileName.toLocaleTimeString()}`;
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {

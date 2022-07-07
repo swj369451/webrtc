@@ -16,7 +16,7 @@ const offerOptions = {
  * @param {*} pc 
  * @param {*} toSocketid 
  */
-async function createMediaFormatOffer(pc, renegotiate) {
+async function createMediaOffer(pc, renegotiate) {
     try {
 
         const offer = await pc.createOffer(offerOptions);
@@ -56,31 +56,35 @@ function onCreateSessionDescriptionError(error) {
 
 /**
  * 创建媒体格式应答
- * @param {*} pc 
+ * @param {*} pc 带有socketId的连接器
  */
-function createMediaFormatAnswer(pc) {
+function createMediaAnswer(pc) {
     console.log(`【${pc.to}】连接：创建媒体格式应答`);
-    pc.createAnswer().then(
-        function(event) {
-            setLocalMediaFormat(pc, event);
+    if (pc.to == undefined || pc.to == null) {
+        console.error(`连接器未设置对等方id`);
+    }
+    pc.createAnswer()
+        .then(
+            function(event) {
+                setLocalMediaFormat(pc, event);
 
-            console.log(`【${pc.to}】连接：发送媒体格式应答`);
-            sendMessage({
-                type: event.type,
-                sdp: event.sdp,
-                from: socket.id,
-                to: pc.to
-            });
-        },
-        onCreateSessionDescriptionError
-    );
+                console.log(`【${pc.to}】连接：发送媒体格式应答`);
+                sendMessage({
+                    type: event.type,
+                    sdp: event.sdp,
+                    from: socket.id,
+                    to: pc.to
+                });
+            },
+            onCreateSessionDescriptionError
+        );
 }
 
 /**
  * 接收媒体格式提议
  * @param {*} message 
  */
-async function receiveMediaFormatOffer(message) {
+async function receiveMediaOffer(message) {
     console.log(`【${message.from}】连接：接收媒体格式提议`);
 
     if (message.renegotiate !== "renegotiate") {
@@ -93,7 +97,7 @@ async function receiveMediaFormatOffer(message) {
         setRemoteMediaFormat(pc, message);
 
         //创建媒体格式应答
-        createMediaFormatAnswer(pc)
+        createMediaAnswer(pc)
     }
 
 
@@ -135,6 +139,13 @@ function setRemoteMediaFormat(pc, message) {
     });
 }
 
+function renegotiation(pc) {
+    if (pc.currentLocalDescription.type === "answer") {
+        createMediaAnswer(pc);
+    } else {
+        createMediaOffer(pc, "renegotiate");
+    }
+}
 
 
-export { createMediaFormatOffer, receiveMediaFormatOffer, receiveMediaFormatAnswer }
+export { createMediaOffer, receiveMediaOffer, receiveMediaFormatAnswer, renegotiation }

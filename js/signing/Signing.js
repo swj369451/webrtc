@@ -4,10 +4,10 @@
 
 import { manJoined } from "../connction/PeerConnctor.js";
 import { collectCandidateTransportAddresses } from "../negotiation/CandidateNegotiate.js";
-import { receiveMediaFormatAnswer, receiveMediaFormatOffer } from "../negotiation/MediaNegotiation.js";
+import { receiveMediaFormatAnswer, receiveMediaOffer } from "../negotiation/MediaNegotiation.js";
 
 let socketServerUrl = "https://signaling.ppamatrix.com:1446";
-let room = "1111";
+let roomNumber = "1111";
 let socket;
 
 /**
@@ -28,7 +28,7 @@ function connectSocketServer() {
 
     socket.on('connect', function() {
         console.log("socket服务器连接成功");
-        socket.emit('create or join', room);
+        socket.emit('create or join', roomNumber);
     });
 
     socket.on('created', function(room) {
@@ -52,7 +52,7 @@ function connectSocketServer() {
     socket.on('message', function(message) {
         console.log('Client received message:', message);
         if (message.type === 'offer') {
-            receiveMediaFormatOffer(message);
+            receiveMediaOffer(message);
         } else if (message.type === 'answer') {
             receiveMediaFormatAnswer(message);
         } else if (message.type === 'candidate') {
@@ -72,4 +72,4 @@ function sendMessage(message) {
 
 
 
-export { joinCommunicationRoom, sendMessage, socket }
+export { joinCommunicationRoom, sendMessage, socket, roomNumber }

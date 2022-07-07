@@ -9,7 +9,7 @@
 /**
  * 音视频媒体通信
  */
-import { establishCommunicationConntor, establishConnector } from "./connction/PeerConnctor.js"
+import { establishCommunicationConntor, addStream, PeerConnectionList } from "./connction/PeerConnctor.js"
 import { getScreenStream } from "./screen/screensharing.js";
 
 
@@ -24,13 +24,17 @@ function connctP2PAudioVideoMediaChat() {
 /**
  * 共享屏幕
  * 屏幕共享给所有人，指定人，指定房间
- * @param roomCode 房间号
- * @param personId 人员id
  */
 async function sharingScreen(roomCode) {
     console.log(`屏幕共享给【${roomCode}】房间`)
     let screenStream = await getScreenStream();
-    establishConnector(screenStream);
+    // addStream(screenStream, );
+    // let array = []
+    // for (let key in PeerConnectionList) {
+    //     let obj = PeerConnectionList[key]
+    //     array.push(obj)
+    // }
+    addStream(screenStream, Array.from(PeerConnectionList.values()));
 }
 
 
