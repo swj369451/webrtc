@@ -7,7 +7,7 @@ import { collectCandidateTransportAddresses } from "../negotiation/CandidateNego
 import { receiveMediaFormatAnswer, receiveMediaFormatOffer } from "../negotiation/MediaNegotiation.js";
 
 let socketServerUrl = "https://signaling.ppamatrix.com:1446";
-let room = "11";
+let room = "1111";
 let socket;
 
 /**
@@ -17,7 +17,7 @@ function joinCommunicationRoom() {
     if (socket == undefined) {
         connectSocketServer();
     }
-    
+
 }
 
 /**
@@ -26,30 +26,30 @@ function joinCommunicationRoom() {
 function connectSocketServer() {
     socket = io.connect(socketServerUrl);
 
-    socket.on('connect', function () {
+    socket.on('connect', function() {
         console.log("socket服务器连接成功");
         socket.emit('create or join', room);
     });
 
-    socket.on('created', function (room) {
+    socket.on('created', function(room) {
         console.log('Created room ' + room);
     });
-    socket.on('full', function (room) {
+    socket.on('full', function(room) {
         console.log('Room ' + room + ' is full');
     });
-    socket.on('join', function (room, socketId) {
+    socket.on('join', function(room, socketId) {
         console.log(socketId + ' made a request to join room ' + room);
         console.log('This peer is the initiator of room ' + room + '!');
         // establishPeerConnection(room, socketId);
         manJoined(room, socketId);
     });
-    socket.on('joined', function (room) {
+    socket.on('joined', function(room) {
         console.log('joined: ' + room);
     });
-    socket.on('log', function (array) {
+    socket.on('log', function(array) {
         console.log.apply(console, array);
     });
-    socket.on('message', function (message) {
+    socket.on('message', function(message) {
         console.log('Client received message:', message);
         if (message.type === 'offer') {
             receiveMediaFormatOffer(message);

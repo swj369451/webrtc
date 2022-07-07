@@ -28,7 +28,7 @@ async function init() {
     // castScreenStream(screenVideo);
 
     //24小时录制
-    reocord(userMediaSteam);
+    // reocord(userMediaSteam);
 }
 
 init();
