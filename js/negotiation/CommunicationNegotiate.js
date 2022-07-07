@@ -8,9 +8,9 @@ import { createMediaOffer } from "./MediaNegotiation.js";
 /**
  * 发起通信协商
  */
-function communicationNegotiate() {
+function communicationNegotiate(roomNumber, indentification) {
     console.log(`发起通信协商`);
-    joinCommunicationRoom();
+    joinCommunicationRoom(roomNumber, indentification);
 }
 
 /**

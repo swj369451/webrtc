@@ -21,9 +21,9 @@ window.PeerConnections = PeerConnectionList;
 /**
  * 建立通信连接
  */
-function establishCommunicationConntor() {
+function establishCommunicationConntor(roomNumber, indentification) {
     console.log(`建立通信连接`)
-    communicationNegotiate();
+    communicationNegotiate(roomNumber, indentification);
 }
 /**
  * 给连接器添加新流
@@ -60,7 +60,6 @@ async function createPeerConnector(peerId) {
     if (userSteam != undefined) {
         await pc.addStream(userSteam);
     }
-
     await addRTCPeerConnectEvent(pc, peerId);
     pc.to = peerId;
     return pc;

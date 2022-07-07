@@ -12,13 +12,13 @@
 import { establishCommunicationConntor, addStream, PeerConnectionList } from "./connction/PeerConnctor.js"
 import { getScreenStream } from "./screen/screensharing.js";
 
-
+let roomNumber = "1111";
 /**
  * 连接端到端音视频通话
  */
 function connctP2PAudioVideoMediaChat() {
-    console.log(`连接端到端音视频通话`)
-    establishCommunicationConntor();
+    console.log(`连接端到端音视频通话`);
+    establishCommunicationConntor(roomNumber);
 }
 
 /**
@@ -37,7 +37,20 @@ async function sharingScreen(roomCode) {
     addStream(screenStream, Array.from(PeerConnectionList.values()));
 }
 
+/**
+ * 连接到信令
+ * 接收到新的流,流来自于哪里
+ */
+class P2PComunication extends EventTarget {
+    constructor(indentification) {
+        super()
+        this.indentification = indentification;
+    }
+    connect() {
+        console.log(`连接端到端音视频通话`);
+        establishCommunicationConntor(roomNumber, indentification);
+    }
+}
 
 
-
-export { connctP2PAudioVideoMediaChat, sharingScreen }
+export { connctP2PAudioVideoMediaChat, sharingScreen, P2PComunication }

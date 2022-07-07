@@ -1,5 +1,6 @@
 import { sendCandidateTransportAddresses } from "../negotiation/CandidateNegotiate.js";
 import { createMediaOffer } from "../negotiation/MediaNegotiation.js";
+import { reportInfo } from "../report/report.js";
 import { socket } from "../signing/Signing.js";
 import { createVideoTag, deleteVideoTag } from "../tagTool.js";
 import { PeerConnectionList } from "./PeerConnctor.js";
@@ -74,7 +75,6 @@ async function handleRemoteStreamAdded(event, form) {
 
     let videoTag = createVideoTag(form);
     videoTag.srcObject = event.stream;
-
     // reportInfo(event.currentTarget, form)
 }
 

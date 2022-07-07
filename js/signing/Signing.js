@@ -7,15 +7,16 @@ import { collectCandidateTransportAddresses } from "../negotiation/CandidateNego
 import { receiveMediaFormatAnswer, receiveMediaOffer } from "../negotiation/MediaNegotiation.js";
 
 let socketServerUrl = "https://signaling.ppamatrix.com:1446";
-let roomNumber = "1111";
+let roomNumber;
 let socket;
 
 /**
  * 加入通信房间
  */
-function joinCommunicationRoom() {
+function joinCommunicationRoom(roomNumber, indentification) {
+    roomNumber = roomNumber;
     if (socket == undefined) {
-        connectSocketServer();
+        connectSocketServer(roomNumber, indentification);
     }
 
 }
@@ -23,12 +24,12 @@ function joinCommunicationRoom() {
 /**
  * 连接socket服务器
  */
-function connectSocketServer() {
+function connectSocketServer(roomNumber, indentification) {
     socket = io.connect(socketServerUrl);
 
     socket.on('connect', function() {
         console.log("socket服务器连接成功");
-        socket.emit('create or join', roomNumber);
+        socket.emit('create or join', roomNumber, indentification);
     });
 
     socket.on('created', function(room) {

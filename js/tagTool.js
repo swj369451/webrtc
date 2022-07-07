@@ -1,5 +1,10 @@
 let app = document.getElementById("app");
 
+/**
+ * 添加视频标签
+ * @param {*} socketId 
+ * @returns 
+ */
 function createVideoTag(socketId) {
 
     let div = document.createElement("div");
@@ -30,8 +35,6 @@ function createVideoTag(socketId) {
         }
         message.setAttribute("style", `display:${flag};`)
         event.currentTarget.innerText = changeText;
-
-
     });
 
 
@@ -41,7 +44,10 @@ function createVideoTag(socketId) {
     div.appendChild(message);
     return video;
 }
-
+/**
+ * 删除视频标签
+ * @param {*} socketId 
+ */
 function deleteVideoTag(socketId) {
     let div = document.getElementById(`div-${socketId}`)
     if (div != null) {
