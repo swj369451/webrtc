@@ -18,6 +18,9 @@ let serverConfig = {
 };
 let PeerConnectionList = new Map();
 window.PeerConnections = PeerConnectionList;
+//已连接的连接器，key是对方昵称
+let connectedPCMap = new Map();
+window.connectedPCMap = connectedPCMap;
 /**
  * 建立通信连接
  */
