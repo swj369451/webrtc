@@ -29,7 +29,8 @@ function connectSocketServer(roomNumber, indentification) {
 
     socket.on('connect', function() {
         console.log("socket服务器连接成功");
-        socket.emit('create or join', roomNumber, indentification);
+        socket.emit('create or join', roomNumber);
+        socket.emit('login', indentification);
     });
 
     socket.on('created', function(room) {
@@ -61,6 +62,13 @@ function connectSocketServer(roomNumber, indentification) {
             console.log(`【收到的ice】=${message.candidate}`)
         } else if (message === 'bye') {
             // handleRemoteHangup();
+        }
+    });
+
+    socket.on('logined', function() {
+        console.log('设备登录成功');
+        if (window.events['onLogined'] != undefined && window.events['onLogined'] != null) {
+            window.events['onLogined']('设备登录成功');
         }
     });
 }

@@ -28,12 +28,6 @@ function connctP2PAudioVideoMediaChat() {
 async function sharingScreen(roomCode) {
     console.log(`屏幕共享给【${roomCode}】房间`)
     let screenStream = await getScreenStream();
-    // addStream(screenStream, );
-    // let array = []
-    // for (let key in PeerConnectionList) {
-    //     let obj = PeerConnectionList[key]
-    //     array.push(obj)
-    // }
     addStream(screenStream, Array.from(PeerConnectionList.values()));
 }
 
@@ -41,15 +35,21 @@ async function sharingScreen(roomCode) {
  * 连接到信令
  * 接收到新的流,流来自于哪里
  */
-class P2PComunication extends EventTarget {
+class P2PComunication {
     constructor(indentification) {
-        super()
         this.indentification = indentification;
+        this.events = new Map();
+        window.events = this.events;
     }
+    addEventListener(eventName, event) {
+        this.events[eventName] = event;
+    }
+
     connect() {
         console.log(`连接端到端音视频通话`);
         establishCommunicationConntor(roomNumber, indentification);
     }
+
 }
 
 

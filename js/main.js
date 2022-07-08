@@ -29,8 +29,13 @@ async function init() {
     let indentification = getIdentification();
 
     //连接端到端音视频通话
-    // connctP2PAudioVideoMediaChat();
+    /**
+     * 
+     */
     let comunication = new P2PComunication(indentification);
+    comunication.addEventListener("onLogined", (message) => {
+        $('#info').text($('#info').text() + message)
+    });
     comunication.connect();
     //展示通信控件
     showControls();
