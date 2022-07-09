@@ -9,7 +9,7 @@
 'use strict';
 import { showControls } from "./controls/CommunicationControl.js";
 import { getUserMeida } from "./media/UserMedia.js";
-import { connctP2PAudioVideoMediaChat, P2PComunication } from "./MediaCommunication.js";
+import { P2PComunication } from "./MediaCommunication.js";
 import { reocord } from "./record/recordTest.js";
 import { castScreenStream } from "./screen/screensharing.js";
 import { getLocalValue, setLocalValue } from "./storage/storage.js";
@@ -18,7 +18,7 @@ const COMMUNICATION_IDENTIFICATION = "communicationIdentification";
 
 async function init() {
 
-
+    let roomNumber = "1111";
 
 
     //展示本地摄像头到屏幕
@@ -36,7 +36,9 @@ async function init() {
     comunication.addEventListener("onLogined", (message) => {
         $('#info').text($('#info').text() + message)
     });
-    comunication.connect();
+    // comunication.connectPeer();
+    comunication.connectRoom(roomNumber, 'UserMedia');
+
     //展示通信控件
     showControls();
 
@@ -53,12 +55,11 @@ async function init() {
 function getIdentification() {
     let indentification = getLocalValue(COMMUNICATION_IDENTIFICATION);
     if (indentification == null || indentification == undefined) {
-        var userIndentification;
-        userIndentification = prompt("请输入通信昵称");
-        while (userIndentification == null || userIndentification == undefined || userIndentification === "") {
-            userIndentification = prompt("请输入通信昵称");
+        indentification = prompt("请输入通信昵称");
+        while (indentification == null || indentification == undefined || indentification === "") {
+            indentification = prompt("请输入通信昵称");
         }
-        indentification = setLocalValue(COMMUNICATION_IDENTIFICATION, `${userIndentification}#${getUUID()}`);
+        setLocalValue(COMMUNICATION_IDENTIFICATION, `${indentification}#${getUUID()}`);
     } else {
         indentification = indentification.substring(0, indentification.indexOf("#"));
     }

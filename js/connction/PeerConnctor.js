@@ -39,6 +39,16 @@ function addStream(stream, PeerConnectionList) {
         createMediaOffer(element, "renegotiate");
     });
 }
+/**
+ * 添加新流
+ * @param {*} stream      媒体流
+ * @param {*} pc     连接器
+ */
+function additionStream(stream, pc) {
+    console.log(`为${pc.indentification}添加${stream.type}流`);
+    pc.addStream(stream);
+    createMediaOffer(pc, "renegotiate");
+}
 
 /**
  * 成员加入
@@ -68,7 +78,31 @@ async function createPeerConnector(peerId) {
     return pc;
 }
 
+function createConnector(indentification) {
+    let pc = new RTCPeerConnection(serverConfig);
+    addRTCPeerConnectEvent(pc, indentification);
+    pc.indentification = indentification;
+    connectedPCMap.set(indentification, pc);
+    //发起媒体协商提议
+    MeidaNegotiationOffer(pc);
+}
+
+function getConnector(indentification) {
+    let pc = connectedPCMap.get(indentification);
+    if (pc == null || pc == undefined) {
+        pc = createConnector(indentification);
+    }
+    return pc;
+}
+
+function close(indentification) {
+    let pc = connectedPCMap.get(indentification);
+    if (pc != null && pc != undefined) {
+        pc.close();
+        connectedPCMap.delete(indentification);
+    }
+}
 
 
 
-export { establishCommunicationConntor, manJoined, createPeerConnector, PeerConnectionList, serverConfig, addStream }
+export { establishCommunicationConntor, manJoined, createPeerConnector, PeerConnectionList, serverConfig, addStream, getConnector, close, additionStream }

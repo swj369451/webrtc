@@ -42,6 +42,7 @@ async function getScreenStream() {
  */
 function handleSuccess(stream) {
     screenStream = stream;
+    screenStream.type = "DisplayMedia";
 }
 /**
  * 处理获取屏幕流失败事件

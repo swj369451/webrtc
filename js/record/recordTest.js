@@ -156,6 +156,13 @@ downloadButton.addEventListener('click', async(event) => {
     } else {
         if (recordInterval != undefined) {
             clearInterval(recordInterval);
+
+        }
+        if (mediaRecorderA.state === "recording") {
+            mediaRecorderA.stop();
+        }
+        if (mediaRecorderB.state === "recording") {
+            mediaRecorderB.stop();
         }
 
         event.currentTarget.innerText = "开启录制";

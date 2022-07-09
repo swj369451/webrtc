@@ -11,7 +11,7 @@ async function getUserMeida() {
     try {
         if (stream == undefined) {
             stream = await navigator.mediaDevices.getUserMedia(constraints);
-
+            stream.type = "UserMedia";
             navigator.mediaDevices.enumerateDevices().then((resolve) => {
                 console.log('【当前可用设备】');
                 console.log(resolve);

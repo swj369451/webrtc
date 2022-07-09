@@ -9,17 +9,11 @@
 /**
  * 音视频媒体通信
  */
-import { establishCommunicationConntor, addStream, PeerConnectionList } from "./connction/PeerConnctor.js"
+import { establishCommunicationConntor, addStream, PeerConnectionList, getConnector, additionStream } from "./connction/PeerConnctor.js"
+import { getUserMeida } from "./media/UserMedia.js";
 import { getScreenStream } from "./screen/screensharing.js";
 
-let roomNumber = "1111";
-/**
- * 连接端到端音视频通话
- */
-function connctP2PAudioVideoMediaChat() {
-    console.log(`连接端到端音视频通话`);
-    establishCommunicationConntor(roomNumber);
-}
+
 
 /**
  * 共享屏幕
@@ -37,6 +31,10 @@ async function sharingScreen(roomCode) {
  */
 class P2PComunication {
     constructor(indentification) {
+        if (indentification == null || indentification == undefined || indentification === "") {
+            console.error("通信名不能为空");
+            return;
+        }
         this.indentification = indentification;
         this.events = new Map();
         window.events = this.events;
@@ -45,12 +43,43 @@ class P2PComunication {
         this.events[eventName] = event;
     }
 
-    connect() {
-        console.log(`连接端到端音视频通话`);
-        establishCommunicationConntor(roomNumber, indentification);
+    /**
+     * 连接单个设备
+     * @param {*} indentification  对方通信名
+     * @param {*} type  通信类型【UserMedia】音视频流通信，【DisplayMedia】屏幕共享
+     */
+    async connectPeer(indentification, type) {
+        console.log(`与${indentification}进行${type}通信`);
+        let pc = getConnector(indentification);
+        let steam;
+        if (type === "UserMedia") {
+            stream = await getUserMeida();
+        } else if (type === "DisplayMedia") {
+            steam = await getScreenStream();
+        } else {
+            console.error(`连接类型【${type}】不支持`);
+        }
+        additionStream(pc, steam);
+    }
+
+    /**
+     * 连接到房间
+     * @param {*} roomNumber   房间号
+     * @param {*} type   通信类型【UserMedia】音视频流通信，【DisplayMedia】屏幕共享
+     */
+    connectRoom(roomNumber, type) {
+        if (type === "UserMedia") {
+            console.log(`连接端到端音视频通话`);
+            establishCommunicationConntor(roomNumber, indentification);
+        } else if (type === "DisplayMedia") {
+            console.error("共享桌面到房间开发中");
+        } else {
+            console.error(`连接类型【${type}】不支持`);
+        }
+
     }
 
 }
 
 
-export { connctP2PAudioVideoMediaChat, sharingScreen, P2PComunication }
+export { sharingScreen, P2PComunication }
