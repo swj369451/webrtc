@@ -1,3 +1,6 @@
+import { disconnect } from "./connction/PeerConnctor.js";
+import { sendDiconnect } from "./signing/Signing.js";
+
 let app = document.getElementById("app");
 
 /**
@@ -35,6 +38,15 @@ function createVideoTag(socketId) {
         }
         message.setAttribute("style", `display:${flag};`)
         event.currentTarget.innerText = changeText;
+    });
+
+    let closebtn = document.createElement("button");
+    closebtn.innerHTML = "断开连接";
+    div.appendChild(closebtn);
+    closebtn.addEventListener('click', function(event) {
+        // closePeer(socketId)
+        // sendDiconnect(socketId);
+        disconnect(socketId);
     });
 
 

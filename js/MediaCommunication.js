@@ -9,22 +9,11 @@
 /**
  * 音视频媒体通信
  */
-import { establishCommunicationConntor, addStream, PeerConnectionList, getConnector, negotiate } from "./connction/PeerConnctor.js"
+import { establishCommunicationConntor, addStream, PeerConnectionList, getConnector, negotiate, disconnect } from "./connction/PeerConnctor.js"
 import { getMedia, getUserMeida } from "./media/UserMedia.js";
 import { getScreenStream } from "./screen/screensharing.js";
 import { connectSocketServer } from "./signing/Signing.js";
 
-
-
-/**
- * 共享屏幕
- * 屏幕共享给所有人，指定人，指定房间
- */
-async function sharingScreen(roomCode) {
-    console.log(`屏幕共享给【${roomCode}】房间`)
-    let screenStream = await getScreenStream();
-    addStream(screenStream, Array.from(PeerConnectionList.values()));
-}
 
 /**
  * 连接到信令
@@ -53,6 +42,11 @@ class P2PComunication {
      * @param {Boolean} sender  是否发送本地媒体，默认发送
      */
     async connectPeer(indentification, type, sender = ture) {
+        if (this.indentification === indentification) {
+            console.warn(`无法连接自己`);
+            return;
+        }
+
         //判断参数
         if (type == undefined) {
             console.error("通信类型不能为空");
@@ -68,6 +62,9 @@ class P2PComunication {
         // type = undefined;
         //协商
         negotiate(pc, type);
+    }
+    closePeer(indentification) {
+        disconnect(indentification);
     }
 
     /**
@@ -91,4 +88,4 @@ class P2PComunication {
 }
 
 
-export { sharingScreen, P2PComunication }
+export { P2PComunication }

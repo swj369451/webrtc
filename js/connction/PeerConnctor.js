@@ -4,12 +4,15 @@
 import { getUserMeida } from "../media/UserMedia.js";
 import { communicationNegotiate, MeidaNegotiationOffer } from "../negotiation/CommunicationNegotiate.js"
 import { createMediaOffer } from "../negotiation/MediaNegotiation.js";
+import { sendDiconnect } from "../signing/Signing.js";
+import { deleteVideoTag } from "../tagTool.js";
 import { addRTCPeerConnectEvent } from "./PeerConnctorEvent.js";
 
 /**
  * 信令和中转服务器配置
  */
 let serverConfig = {
+    "bundlePolicy": 'max-bundle',
     "iceServers": [
         { "urls": "stun:101.35.181.216" },
         { "urls": "turn:139.9.45.150", username: "test", credential: "123" }
@@ -78,8 +81,6 @@ function createConnector(indentification) {
     addRTCPeerConnectEvent(pc, indentification);
     pc.to = indentification;
     PeerConnectionList.set(indentification, pc);
-    //发起媒体协商提议
-    // MeidaNegotiationOffer(pc);
     return pc;
 }
 
@@ -91,14 +92,19 @@ function getConnector(indentification) {
     return pc;
 }
 
-function close(indentification) {
+function disconnect(indentification) {
     let pc = PeerConnectionList.get(indentification);
     if (pc != null && pc != undefined) {
         pc.close();
         PeerConnectionList.delete(indentification);
+        sendDiconnect(pc.to);
+    }
+
+    if (window.events['onDiscounnect'] != undefined && window.events['onDiscounnect'] != null) {
+        window.events['onDiscounnect'](indentification);
     }
 }
 
 
 
-export { establishCommunicationConntor, manJoined, createPeerConnector, PeerConnectionList, serverConfig, addStream, getConnector, close, negotiate }
+export { establishCommunicationConntor, manJoined, createPeerConnector, PeerConnectionList, serverConfig, addStream, getConnector, disconnect, negotiate }

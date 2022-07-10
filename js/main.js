@@ -13,40 +13,37 @@ import { P2PComunication } from "./MediaCommunication.js";
 import { reocord } from "./record/recordTest.js";
 import { castScreenStream } from "./screen/screensharing.js";
 import { getLocalValue, setLocalValue } from "./storage/storage.js";
+import { createVideoTag, deleteVideoTag } from "./tagTool.js";
 
-const COMMUNICATION_IDENTIFICATION = "communicationIdentification";
+// const COMMUNICATION_IDENTIFICATION = "communicationIdentification";
 
 async function init() {
 
-    let roomNumber = "1111";
-
-
     //展示本地摄像头到屏幕
-    // let userMediaSteam = await getUserMeida();
-    // document.querySelector('video').srcObject = userMediaSteam
+    let userMediaSteam = await getUserMeida();
+    document.querySelector('video').srcObject = userMediaSteam
 
 
-    // let indentification = getIdentification();
-
-    //连接端到端音视频通话
-    /**
-     * 
-     */
     let indentification = prompt("请输入通信昵称");
     $("#indentification").text($("#indentification").text() + indentification);
+
     let comunication = new P2PComunication(indentification);
     comunication.addEventListener("onLogined", (message) => {
         $('#info').text($('#info').text() + message)
-
+    });
+    comunication.addEventListener("onAddStream", (stream, indentification) => {
+        console.log("获取流");
+        let videoTag = createVideoTag(indentification);
+        videoTag.srcObject = stream;
+    });
+    comunication.addEventListener("onDiscounnect", (indentification) => {
+        deleteVideoTag(indentification);
     });
 
     $("#connect").click(function(e) {
         let indentification = document.getElementById("input").value;
-        comunication.connectPeer(indentification, "UserMedia", true);
+        comunication.connectPeer(indentification, "UserMedia", false);
     });
-    // comunication.init();
-
-    // comunication.connectRoom(roomNumber, 'UserMedia');
 
     //展示通信控件
     showControls();

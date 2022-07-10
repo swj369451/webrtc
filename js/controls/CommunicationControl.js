@@ -1,5 +1,4 @@
-import { sharingScreen } from "../MediaCommunication.js";
-import { roomNumber } from "../signing/Signing.js";
+// import { roomNumber } from "../signing/Signing.js";
 
 /**
  * 展示控件
@@ -73,24 +72,24 @@ function showControls() {
 
     });
 
-    initScreensharing();
+    // initScreensharing();
 }
 /**
  * 初始化屏幕共享功能
  */
-function initScreensharing() {
-    let screensharingBtn = document.getElementById("screensharingBtn");
-    screensharingBtn.addEventListener('click', function(event) {
-        let btnName;
-        if (event.currentTarget.innerText === "开启屏幕共享") {
-            btnName = "关闭屏幕共享";
-            sharingScreen(roomNumber);
-        } else {
-            btnName = "开启屏幕共享"
-        }
-        event.currentTarget.innerText = btnName;
+// function initScreensharing() {
+//     let screensharingBtn = document.getElementById("screensharingBtn");
+//     screensharingBtn.addEventListener('click', function(event) {
+//         let btnName;
+//         if (event.currentTarget.innerText === "开启屏幕共享") {
+//             btnName = "关闭屏幕共享";
+//             // sharingScreen(roomNumber);
+//         } else {
+//             btnName = "开启屏幕共享"
+//         }
+//         event.currentTarget.innerText = btnName;
 
-    });
-}
+//     });
+// }
 
 export { showControls }

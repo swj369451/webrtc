@@ -4,7 +4,7 @@ import { getScreenStream } from "../screen/screensharing.js";
 
 // Put variables in global scope to make them available to the browser console.
 const constraints = {
-    audio: false,
+    audio: true,
     video: true
 };
 let stream;

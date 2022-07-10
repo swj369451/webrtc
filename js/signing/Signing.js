@@ -2,12 +2,12 @@
  * 信令服务器
  */
 
-import { manJoined } from "../connction/PeerConnctor.js";
+import { disconnect } from "../connction/PeerConnctor.js";
 import { collectCandidateTransportAddresses } from "../negotiation/CandidateNegotiate.js";
 import { receiveMediaFormatAnswer, receiveMediaOffer } from "../negotiation/MediaNegotiation.js";
 
 let socketServerUrl = "https://signaling.ppamatrix.com:1446";
-let roomNumber;
+// let roomNumber;
 let socket;
 let connected;
 let name;
@@ -36,35 +36,34 @@ function connectSocketServer(indentification) {
         connected = true;
     });
 
-    socket.on('created', function(room) {
-        console.log('Created room ' + room);
-    });
-    socket.on('full', function(room) {
-        console.log('Room ' + room + ' is full');
-    });
-    socket.on('join', function(room, socketId) {
-        console.log(socketId + ' made a request to join room ' + room);
-        console.log('This peer is the initiator of room ' + room + '!');
-        // establishPeerConnection(room, socketId);
-        manJoined(room, socketId);
-    });
-    socket.on('joined', function(room) {
-        console.log('joined: ' + room);
-    });
+    // socket.on('created', function(room) {
+    //     console.log('Created room ' + room);
+    // });
+    // socket.on('full', function(room) {
+    //     console.log('Room ' + room + ' is full');
+    // });
+    // socket.on('join', function(room, socketId) {
+    //     console.log(socketId + ' made a request to join room ' + room);
+    //     console.log('This peer is the initiator of room ' + room + '!');
+    //     manJoined(room, socketId);
+    // });
+    // socket.on('joined', function(room) {
+    //     console.log('joined: ' + room);
+    // });
     socket.on('log', function(array) {
         console.log.apply(console, array);
     });
     socket.on('message', function(message) {
-        console.log('Client received message:', message);
+        console.log(`收到来自${message.from}的${message.type}类型消息`);
         if (message.type === 'offer') {
             receiveMediaOffer(message);
         } else if (message.type === 'answer') {
             receiveMediaFormatAnswer(message);
         } else if (message.type === 'candidate') {
             collectCandidateTransportAddresses(message);
-            console.log(`【收到的ice】=${message.candidate}`)
-        } else if (message === 'bye') {
-            // handleRemoteHangup();
+            // console.log(`【收到的ice】=${message.candidate}`)
+        } else if (message.type === 'disconnect') {
+            disconnect(message.from);
         }
     });
 
@@ -84,6 +83,19 @@ function sendMessage(message) {
     socket.emit('message', message);
 }
 
+function sendDiconnect(deviceId) {
+    // socket.emit('disconnect', deviceId);
+    sendMessage({
+        type: 'disconnect',
+        from: window.indentification,
+        to: deviceId,
+        // indentification: deviceId
+    });
+}
+
+function check() {
+    socket.emit('check');
+}
 
 
-export { joinCommunicationRoom, sendMessage, socket, roomNumber, connectSocketServer }
+export { joinCommunicationRoom, sendMessage, socket, connectSocketServer, sendDiconnect }

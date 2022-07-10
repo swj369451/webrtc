@@ -20,7 +20,7 @@ function collectCandidateTransportAddresses(message) {
             candidate: message.candidate
         });
         pc.addIceCandidate(candidate).then(data => {
-            console.log(`【添加ice】` + data)
+            console.log(`【添加ice】`)
         }, error => {
             console.log(`【添加ice错误】` + error)
         });

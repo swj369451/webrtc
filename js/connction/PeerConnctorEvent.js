@@ -10,6 +10,7 @@ import { PeerConnectionList } from "./PeerConnctor.js";
  * @param {*} socketId 
  */
 function addRTCPeerConnectEvent(pc, socketId) {
+
     // pc.onconnectionstatechange = function (event) { handleConnectionstatechange(event, socketId); };
     pc.onicecandidate = function(event) { handleIceCandidate(event, socketId); };
     pc.onaddstream = function(event) { handleRemoteStreamAdded(event, socketId); };
@@ -52,19 +53,14 @@ function handleIceCandidate(event, from) {
 
 function handleconnectionstatechange(event, from) {
     if (event.currentTarget.iceConnectionState === "disconnected") {
-
-        if (event.currentTarget.currentLocalDescription.type === "offer") {
-            createMediaOffer(event.currentTarget);
-            setTimeout(() => {
-                if (event.currentTarget.signalingState === "have-local-offer") {
-                    close(from);
-                }
-            }, 5000);
-
-        }
+        createMediaOffer(event.currentTarget);
+        setTimeout(() => {
+            if (event.currentTarget.signalingState === "have-local-offer") {
+                close(from);
+            }
+        }, 2000);
         console.log(`【重连ice】重新与${from}连接ice`)
     }
-
     if (event.currentTarget.iceConnectionState === "failed") {
         close(from);
     }
@@ -72,10 +68,11 @@ function handleconnectionstatechange(event, from) {
 
 async function handleRemoteStreamAdded(event, form) {
     console.log('Remote stream added.');
+    if (window.events['onAddStream'] != undefined && window.events['onAddStream'] != null) {
+        window.events['onAddStream'](event.stream, form);
+    }
+    reportInfo(event.currentTarget, form);
 
-    let videoTag = createVideoTag(form);
-    videoTag.srcObject = event.stream;
-    // reportInfo(event.currentTarget, form)
 }
 
 function handleRemoteStreamRemoved(event, from) {
@@ -94,7 +91,5 @@ function close(targetId) {
         PeerConnectionList.delete(targetId);
         deleteVideoTag(targetId);
     }
-
-
 }
 export { addRTCPeerConnectEvent }

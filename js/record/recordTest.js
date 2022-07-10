@@ -18,21 +18,22 @@ let mediaRecorderB;
 let init = false;
 
 //录制切片
-let timeslice = 1000;
+let timeslice = 500;
 
 //保存视频时长
-let recordDuration = 1000 * 5;
+let recordDuration = 1000 * 60;
 
 //保存视频定时器
 let recordInterval;
 
+let SupportedMimeTypes;
 /**
  * 录制音视频流
  * @param {*} stream 流
  * @returns 
  */
 async function reocord(stream) {
-    let SupportedMimeTypes = getSupportedMimeTypes();
+    SupportedMimeTypes = getSupportedMimeTypes();
     if (SupportedMimeTypes.length == 0) {
         console.info("没有支持的录制类型");
         return;
@@ -62,15 +63,18 @@ async function reocord(stream) {
     //切换视频缓存
     console.debug(`【视频录制】A组开始${new Date()}`);
     mediaRecorderA.start(timeslice);
+    recordedStartTimeA = new Date();
     recordInterval = setInterval(() => {
         if (flagA) {
+            mediaRecorderB.start(timeslice);
             mediaRecorderA.stop();
             console.debug(`【视频录制】A组开始${new Date()}`);
-            mediaRecorderB.start(timeslice);
+
         } else {
+            mediaRecorderA.start(timeslice);
             mediaRecorderB.stop();
             console.debug(`【视频录制】A组开始${new Date()}`);
-            mediaRecorderA.start(timeslice);
+
         }
         flagA = !flagA;
 
@@ -89,9 +93,9 @@ function handleDataAvailableA(event) {
     if (event.data && event.data.size > 0) {
 
         if (recordedBlobsA.length == 0) {
-            recordedStartTimeA = new Date(event.timecode);
+            recordedStartTimeA = new Date(event.timecode - timeslice);
         }
-        recordedEndTimeA = new Date(event.timecode);
+        recordedEndTimeA = new Date(event.timecode - timeslice);
         recordedBlobsA.push(event.data);
 
 
@@ -103,9 +107,9 @@ function handleDataAvailableB(event) {
     // console.debug("【视频录制】处理视频切片，时间" + new Date(event.timecode));
     if (event.data && event.data.size > 0) {
         if (recordedBlobsB.length == 0) {
-            recordedStartTimeB = new Date(event.timecode);
+            recordedStartTimeB = new Date(event.timecode - timeslice);
         }
-        recordedEndTimeB = new Date(event.timecode);
+        recordedEndTimeB = new Date(event.timecode - timeslice);
         recordedBlobsB.push(event.data);
     }
 }
@@ -115,10 +119,11 @@ function handleDataAvailableB(event) {
  */
 function getSupportedMimeTypes() {
     const possibleTypes = [
+        'video/mp4;codecs=h264,aac',
         'video/webm;codecs=vp9,opus',
         'video/webm;codecs=vp8,opus',
         'video/webm;codecs=h264,opus',
-        'video/mp4;codecs=h264,aac',
+
     ];
     return possibleTypes.filter(mimeType => {
         return MediaRecorder.isTypeSupported(mimeType);
@@ -130,7 +135,7 @@ function getSupportedMimeTypes() {
  * @param {*} fileName  下载文件名
  */
 function downloadBlob(blobs, fileName) {
-    const blob = new Blob(blobs, { type: 'video/webm;codecs=vp9,opus' });
+    const blob = new Blob(blobs, { type: SupportedMimeTypes });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.style.display = 'none';
@@ -156,7 +161,6 @@ downloadButton.addEventListener('click', async(event) => {
     } else {
         if (recordInterval != undefined) {
             clearInterval(recordInterval);
-
         }
         if (mediaRecorderA.state === "recording") {
             mediaRecorderA.stop();
