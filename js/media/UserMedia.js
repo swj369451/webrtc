@@ -1,5 +1,7 @@
 'use strict';
 
+import { getScreenStream } from "../screen/screensharing.js";
+
 // Put variables in global scope to make them available to the browser console.
 const constraints = {
     audio: false,
@@ -7,11 +9,23 @@ const constraints = {
 };
 let stream;
 
+async function getMedia(type) {
+    let stream;
+    if (type === "UserMedia") {
+        stream = await getUserMeida();
+    } else if (type === "DisplayMedia") {
+        stream = await getScreenStream();
+    } else {
+        console.error(`连接类型【${type}】不支持`);
+    }
+    return stream;
+}
+
 async function getUserMeida() {
     try {
         if (stream == undefined) {
             stream = await navigator.mediaDevices.getUserMedia(constraints);
-            stream.type = "UserMedia";
+            // stream.type = "UserMedia";
             navigator.mediaDevices.enumerateDevices().then((resolve) => {
                 console.log('【当前可用设备】');
                 console.log(resolve);
@@ -68,4 +82,4 @@ let handleOnRemovetrack = function onRemovetrack(e) {
 let handleOnAddtrack = function onAddtrack(e) {
     console.error(`【事件】流轨道添加${e}`);
 }
-export { getUserMeida, stream }
+export { getUserMeida, stream, getMedia }

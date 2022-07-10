@@ -54,7 +54,7 @@ function handleconnectionstatechange(event, from) {
     if (event.currentTarget.iceConnectionState === "disconnected") {
 
         if (event.currentTarget.currentLocalDescription.type === "offer") {
-            createMediaOffer(event.currentTarget, "renegotiate");
+            createMediaOffer(event.currentTarget);
             setTimeout(() => {
                 if (event.currentTarget.signalingState === "have-local-offer") {
                     close(from);

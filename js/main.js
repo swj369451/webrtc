@@ -22,22 +22,31 @@ async function init() {
 
 
     //展示本地摄像头到屏幕
-    let userMediaSteam = await getUserMeida();
-    document.querySelector('video').srcObject = userMediaSteam
+    // let userMediaSteam = await getUserMeida();
+    // document.querySelector('video').srcObject = userMediaSteam
 
 
-    let indentification = getIdentification();
+    // let indentification = getIdentification();
 
     //连接端到端音视频通话
     /**
      * 
      */
+    let indentification = prompt("请输入通信昵称");
+    $("#indentification").text($("#indentification").text() + indentification);
     let comunication = new P2PComunication(indentification);
     comunication.addEventListener("onLogined", (message) => {
         $('#info').text($('#info').text() + message)
+
     });
-    // comunication.connectPeer();
-    comunication.connectRoom(roomNumber, 'UserMedia');
+
+    $("#connect").click(function(e) {
+        let indentification = document.getElementById("input").value;
+        comunication.connectPeer(indentification, "UserMedia", true);
+    });
+    // comunication.init();
+
+    // comunication.connectRoom(roomNumber, 'UserMedia');
 
     //展示通信控件
     showControls();
@@ -49,31 +58,6 @@ async function init() {
     //24小时录制
     // reocord(userMediaSteam);
 }
-/**
- * 查询通信昵称
- */
-function getIdentification() {
-    let indentification = getLocalValue(COMMUNICATION_IDENTIFICATION);
-    if (indentification == null || indentification == undefined) {
-        indentification = prompt("请输入通信昵称");
-        while (indentification == null || indentification == undefined || indentification === "") {
-            indentification = prompt("请输入通信昵称");
-        }
-        setLocalValue(COMMUNICATION_IDENTIFICATION, `${indentification}#${getUUID()}`);
-    } else {
-        indentification = indentification.substring(0, indentification.indexOf("#"));
-    }
-    console.log(`用户通信昵称和唯一标识${indentification}`);
-    $("#indentification").text($("#indentification").text() + indentification);
-    return indentification;
-}
 
-function getUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = (Math.random() * 16) | 0,
-            v = c == 'x' ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
-}
 
 init();

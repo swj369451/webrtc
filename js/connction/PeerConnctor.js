@@ -18,9 +18,6 @@ let serverConfig = {
 };
 let PeerConnectionList = new Map();
 window.PeerConnections = PeerConnectionList;
-//已连接的连接器，key是对方昵称
-let connectedPCMap = new Map();
-window.connectedPCMap = connectedPCMap;
 /**
  * 建立通信连接
  */
@@ -40,14 +37,12 @@ function addStream(stream, PeerConnectionList) {
     });
 }
 /**
- * 添加新流
+ * 进行协商
  * @param {*} stream      媒体流
  * @param {*} pc     连接器
  */
-function additionStream(stream, pc) {
-    console.log(`为${pc.indentification}添加${stream.type}流`);
-    pc.addStream(stream);
-    createMediaOffer(pc, "renegotiate");
+function negotiate(pc, type) {
+    createMediaOffer(pc, type);
 }
 
 /**
@@ -81,14 +76,15 @@ async function createPeerConnector(peerId) {
 function createConnector(indentification) {
     let pc = new RTCPeerConnection(serverConfig);
     addRTCPeerConnectEvent(pc, indentification);
-    pc.indentification = indentification;
-    connectedPCMap.set(indentification, pc);
+    pc.to = indentification;
+    PeerConnectionList.set(indentification, pc);
     //发起媒体协商提议
-    MeidaNegotiationOffer(pc);
+    // MeidaNegotiationOffer(pc);
+    return pc;
 }
 
 function getConnector(indentification) {
-    let pc = connectedPCMap.get(indentification);
+    let pc = PeerConnectionList.get(indentification);
     if (pc == null || pc == undefined) {
         pc = createConnector(indentification);
     }
@@ -96,13 +92,13 @@ function getConnector(indentification) {
 }
 
 function close(indentification) {
-    let pc = connectedPCMap.get(indentification);
+    let pc = PeerConnectionList.get(indentification);
     if (pc != null && pc != undefined) {
         pc.close();
-        connectedPCMap.delete(indentification);
+        PeerConnectionList.delete(indentification);
     }
 }
 
 
 
-export { establishCommunicationConntor, manJoined, createPeerConnector, PeerConnectionList, serverConfig, addStream, getConnector, close, additionStream }
+export { establishCommunicationConntor, manJoined, createPeerConnector, PeerConnectionList, serverConfig, addStream, getConnector, close, negotiate }

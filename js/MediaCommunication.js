@@ -9,9 +9,10 @@
 /**
  * 音视频媒体通信
  */
-import { establishCommunicationConntor, addStream, PeerConnectionList, getConnector, additionStream } from "./connction/PeerConnctor.js"
-import { getUserMeida } from "./media/UserMedia.js";
+import { establishCommunicationConntor, addStream, PeerConnectionList, getConnector, negotiate } from "./connction/PeerConnctor.js"
+import { getMedia, getUserMeida } from "./media/UserMedia.js";
 import { getScreenStream } from "./screen/screensharing.js";
+import { connectSocketServer } from "./signing/Signing.js";
 
 
 
@@ -36,8 +37,10 @@ class P2PComunication {
             return;
         }
         this.indentification = indentification;
+        window.indentification = indentification;
         this.events = new Map();
         window.events = this.events;
+        connectSocketServer(this.indentification);
     }
     addEventListener(eventName, event) {
         this.events[eventName] = event;
@@ -45,21 +48,26 @@ class P2PComunication {
 
     /**
      * 连接单个设备
-     * @param {*} indentification  对方通信名
-     * @param {*} type  通信类型【UserMedia】音视频流通信，【DisplayMedia】屏幕共享
+     * @param {String} indentification  对方通信名
+     * @param {String} type  通信类型【UserMedia】音视频流通信，【DisplayMedia】屏幕共享
+     * @param {Boolean} sender  是否发送本地媒体，默认发送
      */
-    async connectPeer(indentification, type) {
-        console.log(`与${indentification}进行${type}通信`);
-        let pc = getConnector(indentification);
-        let steam;
-        if (type === "UserMedia") {
-            stream = await getUserMeida();
-        } else if (type === "DisplayMedia") {
-            steam = await getScreenStream();
-        } else {
-            console.error(`连接类型【${type}】不支持`);
+    async connectPeer(indentification, type, sender = ture) {
+        //判断参数
+        if (type == undefined) {
+            console.error("通信类型不能为空");
         }
-        additionStream(pc, steam);
+        console.log(`与${indentification}进行${type}通信,是否发送本地媒体【${sender}】`);
+
+        //获取连接器，添加流
+        let pc = getConnector(indentification);
+        if (sender) {
+            let stream = await getMedia(type);
+            pc.addStream(stream);
+        }
+        // type = undefined;
+        //协商
+        negotiate(pc, type);
     }
 
     /**
@@ -68,6 +76,7 @@ class P2PComunication {
      * @param {*} type   通信类型【UserMedia】音视频流通信，【DisplayMedia】屏幕共享
      */
     connectRoom(roomNumber, type) {
+
         if (type === "UserMedia") {
             console.log(`连接端到端音视频通话`);
             establishCommunicationConntor(roomNumber, indentification);

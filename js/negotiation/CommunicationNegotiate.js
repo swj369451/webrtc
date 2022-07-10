@@ -11,6 +11,8 @@ import { createMediaOffer } from "./MediaNegotiation.js";
 function communicationNegotiate(roomNumber, indentification) {
     console.log(`发起通信协商`);
     joinCommunicationRoom(roomNumber, indentification);
+    // connectSocketServer(indentification);
+
 }
 
 /**

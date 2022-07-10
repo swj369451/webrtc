@@ -2,7 +2,9 @@
  * 媒体协商
  */
 
-import { createPeerConnector, PeerConnectionList } from "../connction/PeerConnctor.js";
+import { addStream, createPeerConnector, getConnector, PeerConnectionList } from "../connction/PeerConnctor.js";
+import { getMedia } from "../media/UserMedia.js";
+import { getScreenStream } from "../screen/screensharing.js";
 import { sendMessage, socket } from "../signing/Signing.js";
 
 
@@ -12,25 +14,23 @@ const offerOptions = {
     offerToReceiveVideo: 1
 };
 /**
- * 创建媒体格式提议
- * @param {*} pc 
- * @param {*} toSocketid 
+ * 发起offer
+ * @param {*} pc  连接器
+ * @param {*} type  通信类型
  */
-async function createMediaOffer(pc, renegotiate) {
+async function createMediaOffer(pc, type) {
     try {
-
         const offer = await pc.createOffer(offerOptions);
-
-        await onCreateOfferSuccess(pc, offer, renegotiate);
-        console.log(`【${pc.to}】连接：创建完成媒体格式提议`);
+        await onCreateOfferSuccess(pc, offer, type);
+        console.log(`完成与【${pc.to}】的媒体格式提议`);
     } catch (e) {
         console.log(e);
     }
 }
 
-async function onCreateOfferSuccess(pc, desc, renegotiate) {
+async function onCreateOfferSuccess(pc, desc, type) {
 
-    console.log(`Offer from pc1\n${desc.sdp}`);
+    // console.log(`Offer from pc1\n${desc.sdp}`);
 
     try {
         setLocalMediaFormat(pc, desc);
@@ -39,11 +39,11 @@ async function onCreateOfferSuccess(pc, desc, renegotiate) {
         sendMessage({
             type: desc.type,
             sdp: desc.sdp,
-            from: socket.id,
+            from: window.indentification,
             to: pc.to,
-            renegotiate: renegotiate
+            mediaType: type
         });
-        // onSetLocalSuccess(pc);
+
     } catch (e) {
         onSetSessionDescriptionError(e);
     }
@@ -58,7 +58,7 @@ function onCreateSessionDescriptionError(error) {
  * 创建媒体格式应答
  * @param {*} pc 带有socketId的连接器
  */
-function createMediaAnswer(pc) {
+function createMediaAnswer(pc, mediaType) {
     console.log(`【${pc.to}】连接：创建媒体格式应答`);
     if (pc.to == undefined || pc.to == null) {
         console.error(`连接器未设置对等方id`);
@@ -72,8 +72,9 @@ function createMediaAnswer(pc) {
                 sendMessage({
                     type: event.type,
                     sdp: event.sdp,
-                    from: socket.id,
-                    to: pc.to
+                    from: window.indentification,
+                    to: pc.to,
+                    mediaType: mediaType
                 });
             },
             onCreateSessionDescriptionError
@@ -85,20 +86,48 @@ function createMediaAnswer(pc) {
  * @param {*} message 
  */
 async function receiveMediaOffer(message) {
-    console.log(`【${message.from}】连接：接收媒体格式提议`);
+    console.log(`收到媒体通信协商【${message}】`);
 
-    if (message.renegotiate !== "renegotiate") {
-        await createPeerConnector(message.from);
+    // if (message.mediaType != undefined) {
+    // let screenSteam = getScreenStream();
+    let pc = getConnector(message.from);
+    if (message.mediaType != undefined) {
+
+        let flag = true;
+        pc.getLocalStreams().forEach(element => {
+            if (element.type === message.mediaType) {
+                flag = false;
+            }
+        });
+        if (flag) {
+            let stream = await getMedia(message.mediaType);
+            // let pc = getConnector(message.from);
+            pc.addStream(stream);
+        }
+
+
+
     }
 
-    let pc = PeerConnectionList.get(message.from);
-    if (pc != undefined) {
-        //设置远程媒体格式
-        setRemoteMediaFormat(pc, message);
+    setRemoteMediaFormat(pc, message);
+    createMediaAnswer(pc, message.mediaType)
+        // createMediaOffer(pc);
+        // } else {
+        //旧服务
+        // if (message.renegotiate !== "renegotiate") {
+        //     await createPeerConnector(message.from);
+        // }
+        // let pc = PeerConnectionList.get(message.from);
+        // if (pc != undefined) {
+        //     //设置远程媒体格式
+        //     setRemoteMediaFormat(pc, message);
 
-        //创建媒体格式应答
-        createMediaAnswer(pc)
-    }
+    //     //创建媒体格式应答
+    //     createMediaAnswer(pc)
+    // }
+    // }
+
+
 
 
 }

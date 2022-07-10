@@ -1,4 +1,3 @@
-
 /**
  * 候选传输地址
  * 
@@ -21,7 +20,7 @@ function collectCandidateTransportAddresses(message) {
             candidate: message.candidate
         });
         pc.addIceCandidate(candidate).then(data => {
-
+            console.log(`【添加ice】` + data)
         }, error => {
             console.log(`【添加ice错误】` + error)
         });
@@ -30,9 +29,9 @@ function collectCandidateTransportAddresses(message) {
 
 
 }
+
 function sendCandidateTransportAddresses(candidate) {
     // console.log(`【${message.from}】连接：接收候选传输地址`);
     sendMessage(candidate);
 }
 export { collectCandidateTransportAddresses, sendCandidateTransportAddresses }
-

@@ -9,28 +9,31 @@ import { receiveMediaFormatAnswer, receiveMediaOffer } from "../negotiation/Medi
 let socketServerUrl = "https://signaling.ppamatrix.com:1446";
 let roomNumber;
 let socket;
+let connected;
+let name;
 
 /**
  * 加入通信房间
  */
 function joinCommunicationRoom(roomNumber, indentification) {
     roomNumber = roomNumber;
-    if (socket == undefined) {
-        connectSocketServer(roomNumber, indentification);
-    }
-
+    socket.emit('create or join', roomNumber);
 }
 
 /**
  * 连接socket服务器
  */
-function connectSocketServer(roomNumber, indentification) {
+function connectSocketServer(indentification) {
+    if (connected) {
+        return;
+    }
     socket = io.connect(socketServerUrl);
 
     socket.on('connect', function() {
         console.log("socket服务器连接成功");
-        socket.emit('create or join', roomNumber);
         socket.emit('login', indentification);
+        name = indentification;
+        connected = true;
     });
 
     socket.on('created', function(room) {
@@ -73,12 +76,14 @@ function connectSocketServer(roomNumber, indentification) {
     });
 }
 
-
 function sendMessage(message) {
+    if (connected && (name != null || name != undefined || name !== "")) {
+        message.from = name;
+    }
     console.log('Client sending message: ', message);
     socket.emit('message', message);
 }
 
 
 
-export { joinCommunicationRoom, sendMessage, socket, roomNumber }
+export { joinCommunicationRoom, sendMessage, socket, roomNumber, connectSocketServer }
