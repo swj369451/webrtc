@@ -7,19 +7,9 @@ import { collectCandidateTransportAddresses } from "../negotiation/CandidateNego
 import { receiveMediaFormatAnswer, receiveMediaOffer } from "../negotiation/MediaNegotiation.js";
 
 let socketServerUrl = "https://signaling.ppamatrix.com:1446";
-// let roomNumber;
 let socket;
 let connected;
 let name;
-
-/**
- * 加入通信房间
- */
-function joinCommunicationRoom(roomNumber, indentification) {
-    roomNumber = roomNumber;
-    socket.emit('create or join', roomNumber);
-}
-
 /**
  * 连接socket服务器
  */
@@ -35,21 +25,6 @@ function connectSocketServer(indentification) {
         name = indentification;
         connected = true;
     });
-
-    // socket.on('created', function(room) {
-    //     console.log('Created room ' + room);
-    // });
-    // socket.on('full', function(room) {
-    //     console.log('Room ' + room + ' is full');
-    // });
-    // socket.on('join', function(room, socketId) {
-    //     console.log(socketId + ' made a request to join room ' + room);
-    //     console.log('This peer is the initiator of room ' + room + '!');
-    //     manJoined(room, socketId);
-    // });
-    // socket.on('joined', function(room) {
-    //     console.log('joined: ' + room);
-    // });
     socket.on('log', function(array) {
         console.log.apply(console, array);
     });
@@ -83,13 +58,11 @@ function sendMessage(message) {
     socket.emit('message', message);
 }
 
-function sendDiconnect(deviceId) {
-    // socket.emit('disconnect', deviceId);
+function sendDiconnect(PeerIdentification) {
     sendMessage({
         type: 'disconnect',
         from: window.indentification,
-        to: deviceId,
-        // indentification: deviceId
+        to: PeerIdentification,
     });
 }
 
@@ -98,4 +71,4 @@ function check() {
 }
 
 
-export { joinCommunicationRoom, sendMessage, socket, connectSocketServer, sendDiconnect }
+export { sendMessage, socket, connectSocketServer, sendDiconnect, check }

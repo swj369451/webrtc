@@ -1,9 +1,14 @@
 // import { roomNumber } from "../signing/Signing.js";
 
+import { getUserMeida } from "../media/UserMedia.js";
+import { startRecord, stopRecord } from "../record/recordTest.js";
+import { check } from "../signing/Signing.js";
+
 /**
  * 展示控件
  */
 function showControls() {
+    //开关画面
     let videoBtn = document.getElementById("videoBtn");
     videoBtn.addEventListener('click', function(event) {
         let text = event.currentTarget.innerText;
@@ -29,6 +34,13 @@ function showControls() {
 
     });
 
+    //查询所有登录用户
+    let checkBtn = document.getElementById("check");
+    checkBtn.addEventListener('click', function(event) {
+        check();
+    });
+
+    //开关声音
     let audioBtn = document.getElementById("audioBtn");
     audioBtn.addEventListener('click', function(event) {
         let text = event.currentTarget.innerText;
@@ -53,6 +65,7 @@ function showControls() {
 
     });
 
+    //ice检查
     let iceBtn = document.getElementById("iceBtn");
     let container = document.getElementById("container");
     iceBtn.addEventListener('click', function(event) {
@@ -72,24 +85,41 @@ function showControls() {
 
     });
 
-    // initScreensharing();
-}
-/**
- * 初始化屏幕共享功能
- */
-// function initScreensharing() {
-//     let screensharingBtn = document.getElementById("screensharingBtn");
-//     screensharingBtn.addEventListener('click', function(event) {
-//         let btnName;
-//         if (event.currentTarget.innerText === "开启屏幕共享") {
-//             btnName = "关闭屏幕共享";
-//             // sharingScreen(roomNumber);
-//         } else {
-//             btnName = "开启屏幕共享"
-//         }
-//         event.currentTarget.innerText = btnName;
+    //录制
+    let recordBtn = document.querySelector('button#record');
+    if (recordBtn != null) {
+        recordBtn.addEventListener('click', async(event) => {
+            let buttonText = event.currentTarget.innerText;
+            if (buttonText === "开启录制") {
+                event.currentTarget.innerText = "停止录制";
+                let stream = await getUserMeida();
+                startRecord(stream);
+                
+            } else {
+                event.currentTarget.innerText = "开启录制";
+                stopRecord();
+                
+            }
+    
+        });
+    }
+    //播放
+    var input = document.getElementById("file"); //input file
+    input.onchange = function(event) {
+        var file = event.currentTarget.files[0]
+        if (file) {
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(e) {
+                let video = document.getElementById("screen-video");
+                video.src = e.target.result;
+    
+            }
+        }
+    }
 
-//     });
-// }
+
+
+}
 
 export { showControls }

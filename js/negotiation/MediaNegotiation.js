@@ -2,10 +2,9 @@
  * 媒体协商
  */
 
-import { addStream, createPeerConnector, getConnector, PeerConnectionList } from "../connction/PeerConnctor.js";
+import { getConnector, PeerConnectionList } from "../connction/PeerConnctor.js";
 import { getMedia } from "../media/UserMedia.js";
-import { getScreenStream } from "../screen/screensharing.js";
-import { sendMessage, socket } from "../signing/Signing.js";
+import { sendMessage } from "../signing/Signing.js";
 
 
 const offerOptions = {
@@ -31,19 +30,26 @@ async function createMediaOffer(pc, type) {
 async function onCreateOfferSuccess(pc, desc, type) {
 
     // console.log(`Offer from pc1\n${desc.sdp}`);
-
+    let isUnidirectional = {
+        audio: false,
+        video: false
+    }
+    let otherMediaConfig = {
+        audio: true,
+        video: true
+    }
     try {
         setLocalMediaFormat(pc, desc);
-
         console.log(`【${pc.to}】连接：发送媒体格式提议`);
         sendMessage({
             type: desc.type,
             sdp: desc.sdp,
             from: window.indentification,
             to: pc.to,
+            isUnidirectional,
+            otherMediaConfig,
             mediaType: type
         });
-
     } catch (e) {
         onSetSessionDescriptionError(e);
     }
@@ -88,8 +94,6 @@ function createMediaAnswer(pc, mediaType) {
 async function receiveMediaOffer(message) {
     console.log(`收到媒体通信协商【${message}】`);
 
-    // if (message.mediaType != undefined) {
-    // let screenSteam = getScreenStream();
     let pc = getConnector(message.from);
     if (message.mediaType != undefined) {
 
@@ -104,32 +108,10 @@ async function receiveMediaOffer(message) {
             // let pc = getConnector(message.from);
             pc.addStream(stream);
         }
-
-
-
     }
 
     setRemoteMediaFormat(pc, message);
     createMediaAnswer(pc, message.mediaType)
-        // createMediaOffer(pc);
-        // } else {
-        //旧服务
-        // if (message.renegotiate !== "renegotiate") {
-        //     await createPeerConnector(message.from);
-        // }
-        // let pc = PeerConnectionList.get(message.from);
-        // if (pc != undefined) {
-        //     //设置远程媒体格式
-        //     setRemoteMediaFormat(pc, message);
-
-    //     //创建媒体格式应答
-    //     createMediaAnswer(pc)
-    // }
-    // }
-
-
-
-
 }
 /**
  * 接收媒体格式应答

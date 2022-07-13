@@ -1,8 +1,8 @@
 import { sendCandidateTransportAddresses } from "../negotiation/CandidateNegotiate.js";
 import { createMediaOffer } from "../negotiation/MediaNegotiation.js";
-import { reportInfo } from "../report/report.js";
+// import { reportInfo } from "../report/report.js";
 import { socket } from "../signing/Signing.js";
-import { createVideoTag, deleteVideoTag } from "../tagTool.js";
+import { deleteVideoTag } from "../tagTool.js";
 import { PeerConnectionList } from "./PeerConnctor.js";
 /**
  * 端到端连接器事件
@@ -11,7 +11,6 @@ import { PeerConnectionList } from "./PeerConnctor.js";
  */
 function addRTCPeerConnectEvent(pc, socketId) {
 
-    // pc.onconnectionstatechange = function (event) { handleConnectionstatechange(event, socketId); };
     pc.onicecandidate = function(event) { handleIceCandidate(event, socketId); };
     pc.onaddstream = function(event) { handleRemoteStreamAdded(event, socketId); };
     pc.onremovestream = function(event) { handleRemoteStreamRemoved(event, socketId); };
@@ -19,11 +18,9 @@ function addRTCPeerConnectEvent(pc, socketId) {
     pc.onicecandidateerror = function(event) { handleicecandidateerror(event, socketId); };
     pc.onconnectionstatechange = function(event) { handleconnectionstatechange(event, socketId); }
     pc.negotiationneeded = function(event) { handlenegotiationneeded(event, socketId); }
-
-    // pc.onnegotiationneeded = function (event) { handleNegotiationneeded(event, socketId); };
-    pc.ontrack = ({ track, streams }) => {
-        console.log(1);
-    }
+        // pc.ontrack = ({ track, streams }) => {
+        //     console.log(1);
+        // }
 }
 
 function handlenegotiationneeded(event, socketId) {
@@ -71,7 +68,7 @@ async function handleRemoteStreamAdded(event, form) {
     if (window.events['onAddStream'] != undefined && window.events['onAddStream'] != null) {
         window.events['onAddStream'](event.stream, form);
     }
-    reportInfo(event.currentTarget, form);
+    // reportInfo(event.currentTarget, form);
 
 }
 

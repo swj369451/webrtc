@@ -1,7 +1,4 @@
 'use strict';
-
-import { getScreenStream } from "../screen/screensharing.js";
-
 // Put variables in global scope to make them available to the browser console.
 const constraints = {
     audio: true,
@@ -21,15 +18,29 @@ async function getMedia(type) {
     return stream;
 }
 
+
+/**
+ * 获取屏幕流
+ */
+async function getScreenStream() {
+    if (screenStream == undefined || screenStream == null) {
+        await navigator.mediaDevices.getDisplayMedia(screensharingConfig)
+            .then((stream) => {
+                screenStream = stream;
+                screenStream.type = "DisplayMedia";
+            }), (error) => {
+                console.error(`getDisplayMedia error: ${error.name}`, error);
+            }
+    }
+    return screenStream;
+}
+
 async function getUserMeida() {
     try {
         if (stream == undefined) {
             stream = await navigator.mediaDevices.getUserMedia(constraints);
-            // stream.type = "UserMedia";
-            navigator.mediaDevices.enumerateDevices().then((resolve) => {
-                console.log('【当前可用设备】');
-                console.log(resolve);
-            })
+            stream.type = "UserMedia";
+
 
             stream.onremovetrack = handleOnRemovetrack;
             stream.onaddtrack = handleOnAddtrack;
@@ -39,6 +50,12 @@ async function getUserMeida() {
     } catch (e) {
         handleError(e);
     }
+}
+async function enumerateDevices() {
+    navigator.mediaDevices.enumerateDevices().then((resolve) => {
+        console.log('【当前可用设备】');
+        console.log(resolve);
+    })
 }
 
 function handleSuccess(stream) {
@@ -66,7 +83,7 @@ function handleError(error) {
         errorNode.innerHTML = "【硬件错误】摄像头被占用";
         console.error(`【硬件错误】摄像头被占用`);
     }
-    errorMsg(`getUserMedia error: ${error.name}`, error);
+
 }
 
 function errorMsg(msg, error) {

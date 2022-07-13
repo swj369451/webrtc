@@ -9,9 +9,8 @@
 /**
  * 音视频媒体通信
  */
-import { establishCommunicationConntor, addStream, PeerConnectionList, getConnector, negotiate, disconnect } from "./connction/PeerConnctor.js"
-import { getMedia, getUserMeida } from "./media/UserMedia.js";
-import { getScreenStream } from "./screen/screensharing.js";
+import { getConnector, negotiate, disconnect } from "./connction/PeerConnctor.js"
+import { getMedia } from "./media/UserMedia.js";
 import { connectSocketServer } from "./signing/Signing.js";
 
 
@@ -67,23 +66,22 @@ class P2PComunication {
         disconnect(indentification);
     }
 
-    /**
-     * 连接到房间
-     * @param {*} roomNumber   房间号
-     * @param {*} type   通信类型【UserMedia】音视频流通信，【DisplayMedia】屏幕共享
-     */
-    connectRoom(roomNumber, type) {
+    // /**
+    //  * 连接到房间
+    //  * @param {*} roomNumber   房间号
+    //  * @param {*} type   通信类型【UserMedia】音视频流通信，【DisplayMedia】屏幕共享
+    //  */
+    // connectRoom(roomNumber, type) {
 
-        if (type === "UserMedia") {
-            console.log(`连接端到端音视频通话`);
-            establishCommunicationConntor(roomNumber, indentification);
-        } else if (type === "DisplayMedia") {
-            console.error("共享桌面到房间开发中");
-        } else {
-            console.error(`连接类型【${type}】不支持`);
-        }
+    //     if (type === "UserMedia") {
+    //         console.log(`连接端到端音视频通话`);
+    //     } else if (type === "DisplayMedia") {
+    //         console.error("共享桌面到房间开发中");
+    //     } else {
+    //         console.error(`连接类型【${type}】不支持`);
+    //     }
 
-    }
+    // }
 
 }
 

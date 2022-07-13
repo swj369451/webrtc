@@ -10,12 +10,9 @@
 import { showControls } from "./controls/CommunicationControl.js";
 import { getUserMeida } from "./media/UserMedia.js";
 import { P2PComunication } from "./MediaCommunication.js";
-import { reocord } from "./record/recordTest.js";
-import { castScreenStream } from "./screen/screensharing.js";
-import { getLocalValue, setLocalValue } from "./storage/storage.js";
+import { getFileLis } from "./record/playComponent.js";
+import { startRecord } from "./record/recordTest.js";
 import { createVideoTag, deleteVideoTag } from "./tagTool.js";
-
-// const COMMUNICATION_IDENTIFICATION = "communicationIdentification";
 
 async function init() {
 
@@ -23,8 +20,8 @@ async function init() {
     let userMediaSteam = await getUserMeida();
     document.querySelector('video').srcObject = userMediaSteam
 
-
-    let indentification = prompt("请输入通信昵称");
+    // let indentification = prompt("请输入通信昵称");
+    let indentification = guid();
     $("#indentification").text($("#indentification").text() + indentification);
 
     let comunication = new P2PComunication(indentification);
@@ -40,9 +37,9 @@ async function init() {
         deleteVideoTag(indentification);
     });
 
-    $("#connect").click(function(e) {
+    $("#connect").click(function (e) {
         let indentification = document.getElementById("input").value;
-        comunication.connectPeer(indentification, "UserMedia", false);
+        comunication.connectPeer(indentification, "UserMedia", true);
     });
 
     //展示通信控件
@@ -54,7 +51,51 @@ async function init() {
 
     //24小时录制
     // reocord(userMediaSteam);
+
+
+    // await getMedia("DisplayMedia");
+    // if (VideoLabel == undefined || VideoLabel == null) {
+    //     console.warn("视频控件为空，不能展示屏幕共享");
+    // } else {
+    //     VideoLabel.srcObject = screenStream;
+    // }
+
 }
 
+function guid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0,
+            v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
 
+function getQueryVariable(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] == variable) { return pair[1]; }
+    }
+    return (false);
+}
+
+// getFileLis();
 init();
+
+//格式化日期
+Date.prototype.Format = function (fmt) { //author: meizz 
+    var o = {
+        "M+": this.getMonth() + 1, //月份 
+        "d+": this.getDate(), //日 
+        "h+": this.getHours(), //小时 
+        "m+": this.getMinutes(), //分 
+        "s+": this.getSeconds(), //秒 
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+        "S": this.getMilliseconds() //毫秒 
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+}
