@@ -8,20 +8,24 @@
  */
 'use strict';
 import { showControls } from "./controls/CommunicationControl.js";
-import { getUserMeida } from "./media/UserMedia.js";
+import { getMedia } from "./media/UserMedia.js";
+// import { getUserMeida } from "./media/UserMedia.js";
 import { P2PComunication } from "./MediaCommunication.js";
-import { getFileLis } from "./record/playComponent.js";
 import { startRecord } from "./record/recordTest.js";
 import { createVideoTag, deleteVideoTag } from "./tagTool.js";
 
 async function init() {
 
     //展示本地摄像头到屏幕
-    let userMediaSteam = await getUserMeida();
+    let userMediaSteam = await getMedia("UserMedia");
     document.querySelector('video').srcObject = userMediaSteam
 
-    // let indentification = prompt("请输入通信昵称");
-    let indentification = guid();
+    //展示屏幕共享
+    // let screenVideo = document.getElementById('screen-video');
+    // castScreenStream(screenVideo);
+
+    let indentification = prompt("请输入通信昵称");
+    // let indentification = 1;
     $("#indentification").text($("#indentification").text() + indentification);
 
     let comunication = new P2PComunication(indentification);
@@ -39,27 +43,14 @@ async function init() {
 
     $("#connect").click(function (e) {
         let indentification = document.getElementById("input").value;
-        comunication.connectPeer(indentification, "UserMedia", true);
+        let connectType = $('input[name="connectType"]:checked').val();
+        let share = $('input[name="share"]:checked').val();
+        comunication.connectPeer(indentification, connectType, share);
+
     });
 
     //展示通信控件
     showControls();
-
-    //展示屏幕共享
-    // let screenVideo = document.getElementById('screen-video');
-    // castScreenStream(screenVideo);
-
-    //24小时录制
-    // reocord(userMediaSteam);
-
-
-    // await getMedia("DisplayMedia");
-    // if (VideoLabel == undefined || VideoLabel == null) {
-    //     console.warn("视频控件为空，不能展示屏幕共享");
-    // } else {
-    //     VideoLabel.srcObject = screenStream;
-    // }
-
 }
 
 function guid() {
@@ -80,7 +71,6 @@ function getQueryVariable(variable) {
     return (false);
 }
 
-// getFileLis();
 init();
 
 //格式化日期

@@ -19,16 +19,24 @@ import { connectSocketServer } from "./signing/Signing.js";
  * 接收到新的流,流来自于哪里
  */
 class P2PComunication {
-    constructor(indentification) {
-        if (indentification == null || indentification == undefined || indentification === "") {
+    constructor(identification) {
+
+        //设置标识名
+        if (identification == null || identification == undefined || identification === "") {
             console.error("通信名不能为空");
             return;
         }
-        this.indentification = indentification;
-        window.indentification = indentification;
+        this.identification = identification;
+        window.indentification = identification;
+        //设置事件
         this.events = new Map();
         window.events = this.events;
-        connectSocketServer(this.indentification);
+
+        //连接信令
+        connectSocketServer(this.identification);
+
+        //安卓设备连接信令，目前只有共享桌面功能
+        androidLogin(identification);
     }
     addEventListener(eventName, event) {
         this.events[eventName] = event;
@@ -40,8 +48,8 @@ class P2PComunication {
      * @param {String} type  通信类型【UserMedia】音视频流通信，【DisplayMedia】屏幕共享
      * @param {Boolean} sender  是否发送本地媒体，默认发送
      */
-    async connectPeer(indentification, type, sender = ture) {
-        if (this.indentification === indentification) {
+    async connectPeer(indentification, type, sender) {
+        if (this.identification === indentification) {
             console.warn(`无法连接自己`);
             return;
         }
@@ -54,7 +62,7 @@ class P2PComunication {
 
         //获取连接器，添加流
         let pc = getConnector(indentification);
-        if (sender) {
+        if (sender==="1") {
             let stream = await getMedia(type);
             pc.addStream(stream);
         }
@@ -84,6 +92,11 @@ class P2PComunication {
     // }
 
 }
-
+function androidLogin(identification){
+    let androidWebRTC = window.AndroidWebRTC;
+    if(androidWebRTC!=undefined){
+        androidWebRTC.init(identification);
+    }
+}
 
 export { P2PComunication }

@@ -1,7 +1,7 @@
 /**
  * 对等连接器
  */
-import { getUserMeida } from "../media/UserMedia.js";
+// import { getUserMeida } from "../media/UserMedia.js";
 
 import { createMediaOffer } from "../negotiation/MediaNegotiation.js";
 import { sendDiconnect } from "../signing/Signing.js";

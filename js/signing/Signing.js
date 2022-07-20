@@ -13,7 +13,10 @@ let name;
 /**
  * 连接socket服务器
  */
-function connectSocketServer(indentification) {
+function connectSocketServer(identification) {
+
+   
+
     if (connected) {
         return;
     }
@@ -21,8 +24,8 @@ function connectSocketServer(indentification) {
 
     socket.on('connect', function() {
         console.log("socket服务器连接成功");
-        socket.emit('login', indentification);
-        name = indentification;
+        socket.emit('login', identification);
+        name = identification;
         connected = true;
     });
     socket.on('log', function(array) {
@@ -69,6 +72,7 @@ function sendDiconnect(PeerIdentification) {
 function check() {
     socket.emit('check');
 }
+
 
 
 export { sendMessage, socket, connectSocketServer, sendDiconnect, check }

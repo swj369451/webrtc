@@ -1,6 +1,6 @@
 // import { roomNumber } from "../signing/Signing.js";
 
-import { getUserMeida } from "../media/UserMedia.js";
+import { getMedia } from "../media/UserMedia.js";
 import { startRecord, stopRecord } from "../record/recordTest.js";
 import { check } from "../signing/Signing.js";
 
@@ -92,7 +92,7 @@ function showControls() {
             let buttonText = event.currentTarget.innerText;
             if (buttonText === "开启录制") {
                 event.currentTarget.innerText = "停止录制";
-                let stream = await getUserMeida();
+                let stream = await getMedia("UserMedia");
                 startRecord(stream);
                 
             } else {

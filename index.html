@@ -20,19 +20,22 @@
             <video id="screen-video" style=" height:25vh; background-color: azure;" autoplay playsinline muted></video>
             <!-- 视频文件播放 -->
             <div id="playLabel" style=" height:25vh; background-color: royalblue; display: flex;">
-                <video id="playVideoLable" style="height:25vh; background-color: azure;" autoplay playsinline
+                <input id="file" type="file"/>
+                <video id="playVideoLable"  style="height:25vh; background-color: azure;" autoplay playsinline
                     muted>
-        
                 </video>
-                <div>
-                    <input id="file" type="file">
-                </div>
-
             </div>
-
-            <input id="input">
-            <button id="check">获取已连接</button>
+            <div>
+                <input id="input"><br/>
+            通信类型：<input type="radio" name="connectType" value="UserMedia" checked="checked">视频
+            <input type="radio" name="connectType" value="DisplayMedia" >桌面<br/>
+            是否共享媒体：<input type="radio" name="share" value="1" checked="checked">是
+            <input type="radio" name="share" value="0" >否
             <button id="connect">连接</button>
+            </div>
+            
+            <button id="check">获取已连接</button>
+    
             <button id="record">开启录制</button>
             <button id="screensharingBtn">开启屏幕共享</button>
             <button id="videoBtn">关闭画面</button>

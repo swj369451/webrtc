@@ -4,12 +4,24 @@ const constraints = {
     audio: true,
     video: true
 };
-let stream;
-
+let userStream;
+let screenStream;
 async function getMedia(type) {
     let stream;
     if (type === "UserMedia") {
-        stream = await getUserMeida();
+        if (userStream != undefined && userStream != null) {
+            return userStream;
+        }
+          await navigator.mediaDevices.getUserMedia(constraints)
+            .then((resolve) => {
+                userStream = resolve;
+                stream=resolve;
+                userStream.type = "UserMedia";
+                userStream.onremovetrack = handleOnRemovetrack;
+                userStream.onaddtrack = handleOnAddtrack;
+            }), (error) => {
+                handleError(error)
+            }
     } else if (type === "DisplayMedia") {
         stream = await getScreenStream();
     } else {
@@ -24,7 +36,7 @@ async function getMedia(type) {
  */
 async function getScreenStream() {
     if (screenStream == undefined || screenStream == null) {
-        await navigator.mediaDevices.getDisplayMedia(screensharingConfig)
+        await navigator.mediaDevices.getDisplayMedia(constraints)
             .then((stream) => {
                 screenStream = stream;
                 screenStream.type = "DisplayMedia";
@@ -35,22 +47,22 @@ async function getScreenStream() {
     return screenStream;
 }
 
-async function getUserMeida() {
-    try {
-        if (stream == undefined) {
-            stream = await navigator.mediaDevices.getUserMedia(constraints);
-            stream.type = "UserMedia";
+// async function getUserMeida() {
+//     try {
+//         if (userStream == undefined) {
+//             userStream = await navigator.mediaDevices.getUserMedia(constraints);
+//             userStream.type = "UserMedia";
 
 
-            stream.onremovetrack = handleOnRemovetrack;
-            stream.onaddtrack = handleOnAddtrack;
-            handleSuccess(stream);
-        }
-        return stream;
-    } catch (e) {
-        handleError(e);
-    }
-}
+//             userStream.onremovetrack = handleOnRemovetrack;
+//             userStream.onaddtrack = handleOnAddtrack;
+//             handleSuccess(userStream);
+//         }
+//         return userStream;
+//     } catch (e) {
+//         handleError(e);
+//     }
+// }
 async function enumerateDevices() {
     navigator.mediaDevices.enumerateDevices().then((resolve) => {
         console.log('【当前可用设备】');
@@ -99,4 +111,4 @@ let handleOnRemovetrack = function onRemovetrack(e) {
 let handleOnAddtrack = function onAddtrack(e) {
     console.error(`【事件】流轨道添加${e}`);
 }
-export { getUserMeida, stream, getMedia }
+export {userStream as stream, getMedia }
