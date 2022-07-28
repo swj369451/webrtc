@@ -41,7 +41,7 @@ function connectSocketServer(identification) {
             collectCandidateTransportAddresses(message);
             // console.log(`【收到的ice】=${message.candidate}`)
         } else if (message.type === 'disconnect') {
-            disconnect(message.from);
+            // disconnect(message.from);
         }
     });
 

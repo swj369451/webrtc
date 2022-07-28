@@ -14,10 +14,10 @@ let mediaRecorderA;
 let mediaRecorderB;
 
 //录制切片
-let timeslice = 100;
+let timeslice = 500;
 
 //保存视频时长
-let recordDuration = 1000 * 10;
+let recordDuration = 1000 * 60 * 5;
 
 //保存视频定时器
 let recordInterval;
@@ -46,21 +46,21 @@ async function startRecord(stream) {
     mediaRecorderA.ondataavailable = handleDataAvailableA;
     mediaRecorderB.ondataavailable = handleDataAvailableB;
     mediaRecorderA.onstop = (event) => {
-        downloadBlob(recordedBlobsA, recordedStartTimeA,"A");
+        downloadBlob(recordedBlobsA, recordedStartTimeA, "A");
         recordedBlobsA = [];
     };
     mediaRecorderB.onstop = (event) => {
-        downloadBlob(recordedBlobsB, recordedStartTimeB,"B");
+        downloadBlob(recordedBlobsB, recordedStartTimeB, "B");
         recordedBlobsB = [];
     };
-    mediaRecorderB.onstart=((event)=>{
+    mediaRecorderB.onstart = ((event) => {
         mediaRecorderA.stop();
     })
-    mediaRecorderA.onstart=((Event)=>{
-        if(mediaRecorderB.state==="recording"){
+    mediaRecorderA.onstart = ((Event) => {
+        if (mediaRecorderB.state === "recording") {
             mediaRecorderB.stop();
         }
-        
+
     })
 
     //切换视频缓存
@@ -124,10 +124,10 @@ function handleDataAvailableB(event) {
         if (recordedBlobsB.length == 0) {
             recordedStartTimeB = new Date(event.timecode - timeslice);
 
-           
+
         }
-         recordedEndTimeB = new Date(event.timecode - timeslice);
-            recordedBlobsB.push(event.data);
+        recordedEndTimeB = new Date(event.timecode - timeslice);
+        recordedBlobsB.push(event.data);
     }
 }
 /**
@@ -152,8 +152,8 @@ function getSupportedMimeTypes() {
  * @param {*} blobs  视频缓存
  * @param {*} fileName  下载文件名
  */
-async function downloadBlob(blobs, fileName,slice) {
-    
+async function downloadBlob(blobs, fileName, slice) {
+
     const blob = new Blob(blobs, { type: SupportedMimeTypes });
     const url = window.URL.createObjectURL(blob);
     let android = window.Android;
@@ -180,7 +180,7 @@ async function downloadBlob(blobs, fileName,slice) {
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = url;
-        a.download = fileName+slice;
+        a.download = fileName + slice;
         // a.download = `a`;
         document.body.appendChild(a);
         a.click();

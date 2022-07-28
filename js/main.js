@@ -8,24 +8,20 @@
  */
 'use strict';
 import { showControls } from "./controls/CommunicationControl.js";
-import { getMedia } from "./media/UserMedia.js";
-// import { getUserMeida } from "./media/UserMedia.js";
 import { P2PComunication } from "./MediaCommunication.js";
-import { startRecord } from "./record/recordTest.js";
 import { createVideoTag, deleteVideoTag } from "./tagTool.js";
 
-async function init() {
+async function init(info) {
 
     //展示本地摄像头到屏幕
-    let userMediaSteam = await getMedia("UserMedia");
-    document.querySelector('video').srcObject = userMediaSteam
+    // let userMediaSteam = await getMedia("UserMedia");
+    // document.querySelector('video').srcObject = userMediaSteam
 
     //展示屏幕共享
     // let screenVideo = document.getElementById('screen-video');
     // castScreenStream(screenVideo);
 
     let indentification = prompt("请输入通信昵称");
-    // let indentification = 1;
     $("#indentification").text($("#indentification").text() + indentification);
 
     let comunication = new P2PComunication(indentification);
@@ -36,6 +32,14 @@ async function init() {
         console.log("获取流");
         let videoTag = createVideoTag(indentification);
         videoTag.srcObject = stream;
+        if(info!=null){
+            info.forEach(element => {
+                if(element.indentification==indentification){
+                    document.getElementById(element.videoId).srcObject=stream;
+                }
+                
+            });
+        }
     });
     comunication.addEventListener("onDiscounnect", (indentification) => {
         deleteVideoTag(indentification);
@@ -44,10 +48,16 @@ async function init() {
     $("#connect").click(function (e) {
         let indentification = document.getElementById("input").value;
         let connectType = $('input[name="connectType"]:checked').val();
-        let share = $('input[name="share"]:checked').val();
+        let share = $('input[name="share"]:checked').val()==="1"?true:false;
         comunication.connectPeer(indentification, connectType, share);
 
     });
+    if(info!=null){
+        info.forEach(element => {
+            comunication.connectPeer(element.indentification, "UserMedia", false);
+        });
+    }
+    
 
     //展示通信控件
     showControls();
@@ -70,9 +80,7 @@ function getQueryVariable(variable) {
     }
     return (false);
 }
-
 init();
-
 //格式化日期
 Date.prototype.Format = function (fmt) { //author: meizz 
     var o = {
@@ -89,3 +97,5 @@ Date.prototype.Format = function (fmt) { //author: meizz
         if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
     return fmt;
 }
+
+export default{init}

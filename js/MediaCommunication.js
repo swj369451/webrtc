@@ -62,7 +62,7 @@ class P2PComunication {
 
         //获取连接器，添加流
         let pc = getConnector(indentification);
-        if (sender==="1") {
+        if (sender) {
             let stream = await getMedia(type);
             pc.addStream(stream);
         }
@@ -73,23 +73,6 @@ class P2PComunication {
     closePeer(indentification) {
         disconnect(indentification);
     }
-
-    // /**
-    //  * 连接到房间
-    //  * @param {*} roomNumber   房间号
-    //  * @param {*} type   通信类型【UserMedia】音视频流通信，【DisplayMedia】屏幕共享
-    //  */
-    // connectRoom(roomNumber, type) {
-
-    //     if (type === "UserMedia") {
-    //         console.log(`连接端到端音视频通话`);
-    //     } else if (type === "DisplayMedia") {
-    //         console.error("共享桌面到房间开发中");
-    //     } else {
-    //         console.error(`连接类型【${type}】不支持`);
-    //     }
-
-    // }
 
 }
 function androidLogin(identification){

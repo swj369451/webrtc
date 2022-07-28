@@ -12,11 +12,12 @@ import { addRTCPeerConnectEvent } from "./PeerConnctorEvent.js";
  */
 let serverConfig = {
     "bundlePolicy": 'max-bundle',
+    "iceCandidatePoolSize":10,
     "iceServers": [
-        { "urls": "stun:101.35.181.216" },
-        { "urls": "turn:139.9.45.150", username: "test", credential: "123" }
+        { "urls": "stun:stun.qq.com" },
+        { "urls": "turn:101.35.181.216", username: "test", credential: "123" }
     ],
-    "iceTransportPolicy": "relay"
+    // "iceTransportPolicy": "relay"
 };
 let PeerConnectionList = new Map();
 window.PeerConnections = PeerConnectionList;

@@ -1,6 +1,6 @@
 import { sendCandidateTransportAddresses } from "../negotiation/CandidateNegotiate.js";
 import { createMediaOffer } from "../negotiation/MediaNegotiation.js";
-// import { reportInfo } from "../report/report.js";
+import { reportInfo } from "../report/report.js";
 import { socket } from "../signing/Signing.js";
 import { deleteVideoTag } from "../tagTool.js";
 import { PeerConnectionList } from "./PeerConnctor.js";
@@ -18,9 +18,6 @@ function addRTCPeerConnectEvent(pc, socketId) {
     pc.onicecandidateerror = function(event) { handleicecandidateerror(event, socketId); };
     pc.onconnectionstatechange = function(event) { handleconnectionstatechange(event, socketId); }
     pc.negotiationneeded = function(event) { handlenegotiationneeded(event, socketId); }
-        // pc.ontrack = ({ track, streams }) => {
-        //     console.log(1);
-        // }
 }
 
 function handlenegotiationneeded(event, socketId) {
@@ -68,8 +65,7 @@ async function handleRemoteStreamAdded(event, form) {
     if (window.events['onAddStream'] != undefined && window.events['onAddStream'] != null) {
         window.events['onAddStream'](event.stream, form);
     }
-    // reportInfo(event.currentTarget, form);
-
+    reportInfo(event.currentTarget, form);
 }
 
 function handleRemoteStreamRemoved(event, from) {

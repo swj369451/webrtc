@@ -71,7 +71,7 @@ function createMediaAnswer(pc, mediaType) {
     }
     pc.createAnswer()
         .then(
-            function(event) {
+            function (event) {
                 setLocalMediaFormat(pc, event);
 
                 console.log(`【${pc.to}】连接：发送媒体格式应答`);
@@ -104,9 +104,14 @@ async function receiveMediaOffer(message) {
             }
         });
         if (flag) {
-            let stream = await getMedia(message.mediaType);
-            // let pc = getConnector(message.from);
-            pc.addStream(stream);
+            try {
+                let stream = await getMedia(message.mediaType);
+                // let pc = getConnector(message.from);
+                pc.addStream(stream);
+            } catch (error) {
+
+            }
+
         }
     }
 
