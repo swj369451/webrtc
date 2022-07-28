@@ -41,7 +41,6 @@ class P2PComunication {
     addEventListener(eventName, event) {
         this.events[eventName] = event;
     }
-
     /**
      * 连接单个设备
      * @param {String} indentification  对方通信名

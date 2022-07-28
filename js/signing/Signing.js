@@ -29,7 +29,7 @@ function connectSocketServer(identification) {
         connected = true;
     });
     socket.on('log', function(array) {
-        console.log.apply(console, array);
+        // console.log.apply(console, array);
     });
     socket.on('message', function(message) {
         console.log(`收到来自${message.from}的${message.type}类型消息`);
@@ -57,7 +57,7 @@ function sendMessage(message) {
     if (connected && (name != null || name != undefined || name !== "")) {
         message.from = name;
     }
-    console.log('Client sending message: ', message);
+    // console.log('Client sending message: ', message);
     socket.emit('message', message);
 }
 

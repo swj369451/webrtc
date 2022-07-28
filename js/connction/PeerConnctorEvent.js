@@ -29,7 +29,7 @@ function handleicecandidateerror(event, socketId) {
 }
 
 function handleIceCandidate(event, from) {
-    console.log(`获取与【${from}】的候选地址`, event);
+    // console.log(`获取与【${from}】的候选地址`, event);
     if (event.candidate) {
         let candidateTransportAddresses = {
             type: 'candidate',
