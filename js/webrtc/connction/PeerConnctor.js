@@ -1,8 +1,6 @@
 /**
  * 对等连接器
  */
-// import { getUserMeida } from "../media/UserMedia.js";
-
 import { createMediaOffer } from "../negotiation/MediaNegotiation.js";
 import { sendDiconnect } from "../signing/Signing.js";
 import { addRTCPeerConnectEvent } from "./PeerConnctorEvent.js";
@@ -15,7 +13,7 @@ let serverConfig = {
     "iceCandidatePoolSize":10,
     "iceServers": [
         { "urls": "stun:stun.qq.com" },
-        { "urls": "turn:101.35.181.216", username: "test", credential: "123" }
+        // { "urls": "turn:101.35.181.216", username: "test", credential: "123" }
     ],
     // "iceTransportPolicy": "relay"
 };

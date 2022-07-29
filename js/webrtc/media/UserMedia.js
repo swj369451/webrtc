@@ -46,23 +46,6 @@ async function getScreenStream() {
     }
     return screenStream;
 }
-
-// async function getUserMeida() {
-//     try {
-//         if (userStream == undefined) {
-//             userStream = await navigator.mediaDevices.getUserMedia(constraints);
-//             userStream.type = "UserMedia";
-
-
-//             userStream.onremovetrack = handleOnRemovetrack;
-//             userStream.onaddtrack = handleOnAddtrack;
-//             handleSuccess(userStream);
-//         }
-//         return userStream;
-//     } catch (e) {
-//         handleError(e);
-//     }
-// }
 async function enumerateDevices() {
     navigator.mediaDevices.enumerateDevices().then((resolve) => {
         console.log('【当前可用设备】');

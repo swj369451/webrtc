@@ -8,14 +8,17 @@
  */
 'use strict';
 import { showControls } from "./controls/CommunicationControl.js";
-import { P2PComunication } from "./MediaCommunication.js";
+import { P2PComunication } from "./webrtc/MediaCommunication.js";
 import { createVideoTag, deleteVideoTag } from "./tagTool.js";
+import { getMedia } from "./webrtc/media/UserMedia.js";
+import { reportInfo } from "./report/report.js";
+import { getConnector } from "./webrtc/connction/PeerConnctor.js";
 
 async function init(info) {
 
     //展示本地摄像头到屏幕
-    // let userMediaSteam = await getMedia("UserMedia");
-    // document.querySelector('video').srcObject = userMediaSteam
+    let userMediaSteam = await getMedia("UserMedia");
+    document.querySelector('video').srcObject = userMediaSteam
 
     //展示屏幕共享
     // let screenVideo = document.getElementById('screen-video');
@@ -40,6 +43,8 @@ async function init(info) {
                 
             });
         }
+        let pc = getConnector(indentification);
+        reportInfo(pc,indentification);
     });
     comunication.addEventListener("onDiscounnect", (indentification) => {
         deleteVideoTag(indentification);

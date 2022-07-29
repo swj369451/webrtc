@@ -38,8 +38,16 @@ class P2PComunication {
         //安卓设备连接信令，目前只有共享桌面功能
         androidLogin(identification);
     }
-    addEventListener(eventName, event) {
-        this.events[eventName] = event;
+    /**
+     * 添加事件,可执行的事件有
+     * onLogined
+     * onAddStream
+     * onDiscounnect
+     * @param {*} eventType 事件类型
+     * @param {*} fun 执行的函数
+     */
+    addEventListener(eventType, fun) {
+        this.events[eventType] = fun;
     }
     /**
      * 连接单个设备
@@ -69,8 +77,12 @@ class P2PComunication {
         //协商
         negotiate(pc, type);
     }
-    closePeer(indentification) {
-        disconnect(indentification);
+    /**
+     * 关闭与对方的连接
+     * @param {*} identification 识别码
+     */
+    closePeer(identification) {
+        disconnect(identification);
     }
 
 }

@@ -1,9 +1,7 @@
 import { sendCandidateTransportAddresses } from "../negotiation/CandidateNegotiate.js";
 import { createMediaOffer } from "../negotiation/MediaNegotiation.js";
-import { reportInfo } from "../report/report.js";
 import { socket } from "../signing/Signing.js";
-import { deleteVideoTag } from "../tagTool.js";
-import { PeerConnectionList } from "./PeerConnctor.js";
+import { disconnect, PeerConnectionList } from "./PeerConnctor.js";
 /**
  * 端到端连接器事件
  * @param {*} pc 
@@ -50,13 +48,13 @@ function handleconnectionstatechange(event, from) {
         createMediaOffer(event.currentTarget);
         setTimeout(() => {
             if (event.currentTarget.signalingState === "have-local-offer") {
-                close(from);
+                disconnect(targetId);
             }
         }, 2000);
         console.log(`【重连ice】重新与${from}连接ice`)
     }
     if (event.currentTarget.iceConnectionState === "failed") {
-        close(from);
+        disconnect(targetId);
     }
 }
 
@@ -65,7 +63,7 @@ async function handleRemoteStreamAdded(event, form) {
     if (window.events['onAddStream'] != undefined && window.events['onAddStream'] != null) {
         window.events['onAddStream'](event.stream, form);
     }
-    reportInfo(event.currentTarget, form);
+    
 }
 
 function handleRemoteStreamRemoved(event, from) {
@@ -76,13 +74,15 @@ function handleRemoteStreamRemoved(event, from) {
 
 function handleiceconnectionstatechange(event, from) {}
 
-function close(targetId) {
-    console.log(`【对方掉线】${targetId}已掉线`)
-    let pc = PeerConnectionList.get(targetId);
-    if (pc != undefined) {
-        pc.close();
-        PeerConnectionList.delete(targetId);
-        deleteVideoTag(targetId);
-    }
-}
+// function close(targetId) {
+//     // console.log(`【对方掉线】${targetId}已掉线`)
+//     // let pc = PeerConnectionList.get(targetId);
+//     // if (pc != undefined) {
+//     //     pc.close();
+//     //     PeerConnectionList.delete(targetId);
+//     //     deleteVideoTag(targetId);
+//     // }
+//     disconnect(targetId);
+    
+// }
 export { addRTCPeerConnectEvent }

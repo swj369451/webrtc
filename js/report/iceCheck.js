@@ -8,7 +8,7 @@
 
 'use strict';
 
-import { serverConfig } from "../connction/PeerConnctor.js";
+import { serverConfig } from "../webrtc/connction/PeerConnctor.js";
 
 const addButton = document.querySelector('button#add');
 const candidateTBody = document.querySelector('tbody#candidatesBody');

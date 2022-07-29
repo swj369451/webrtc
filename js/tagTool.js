@@ -1,4 +1,4 @@
-import { disconnect } from "./connction/PeerConnctor.js";
+import { disconnect } from "./webrtc/connction/PeerConnctor.js";
 let app = document.getElementById("app");
 
 /**

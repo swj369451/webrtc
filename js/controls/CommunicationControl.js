@@ -1,8 +1,8 @@
 // import { roomNumber } from "../signing/Signing.js";
 
-import { getMedia } from "../media/UserMedia.js";
+import { getMedia } from "../webrtc/media/UserMedia.js";
 import { startRecord, stopRecord } from "../record/recordTest.js";
-import { check } from "../signing/Signing.js";
+import { check } from "../webrtc/signing/Signing.js";
 
 /**
  * 展示控件

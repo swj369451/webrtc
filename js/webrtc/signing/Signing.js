@@ -2,7 +2,6 @@
  * 信令服务器
  */
 
-import { disconnect } from "../connction/PeerConnctor.js";
 import { collectCandidateTransportAddresses } from "../negotiation/CandidateNegotiate.js";
 import { receiveMediaFormatAnswer, receiveMediaOffer } from "../negotiation/MediaNegotiation.js";
 
