@@ -1,3 +1,4 @@
+
 'use strict';
 // Put variables in global scope to make them available to the browser console.
 const constraints = {
@@ -6,26 +7,32 @@ const constraints = {
 };
 let userStream;
 let screenStream;
-async function getMedia(type) {
+
+async function getMedia(type, constraints = {
+    audio: true,
+    video: true
+}) {
     let stream;
     if (type === "UserMedia") {
         if (userStream != undefined && userStream != null) {
             return userStream;
         }
-          await navigator.mediaDevices.getUserMedia(constraints)
+        await navigator.mediaDevices.getUserMedia(constraints)
             .then((resolve) => {
                 userStream = resolve;
-                stream=resolve;
+                stream = resolve;
                 userStream.type = "UserMedia";
                 userStream.onremovetrack = handleOnRemovetrack;
                 userStream.onaddtrack = handleOnAddtrack;
-            }), (error) => {
+            }),
+            (error) => {
                 handleError(error)
             }
     } else if (type === "DisplayMedia") {
-        stream = await getScreenStream();
+        stream = await getScreenStream(constraints);
     } else {
         console.error(`连接类型【${type}】不支持`);
+        return null;
     }
     return stream;
 }
@@ -34,7 +41,7 @@ async function getMedia(type) {
 /**
  * 获取屏幕流
  */
-async function getScreenStream() {
+async function getScreenStream(constraints) {
     if (screenStream == undefined || screenStream == null) {
         await navigator.mediaDevices.getDisplayMedia(constraints)
             .then((stream) => {
@@ -94,4 +101,4 @@ let handleOnRemovetrack = function onRemovetrack(e) {
 let handleOnAddtrack = function onAddtrack(e) {
     console.error(`【事件】流轨道添加${e}`);
 }
-export {userStream as stream, getMedia }
+export { userStream as stream, getMedia }

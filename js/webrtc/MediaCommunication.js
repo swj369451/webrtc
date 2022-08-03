@@ -19,15 +19,15 @@ import { connectSocketServer } from "./signing/Signing.js";
  * 接收到新的流,流来自于哪里
  */
 class P2PComunication {
-    constructor(identification) {
 
+    constructor(identification) {
         //设置标识名
         if (identification == null || identification == undefined || identification === "") {
             console.error("通信名不能为空");
             return;
         }
         this.identification = identification;
-        window.indentification = identification;
+        window.identification = identification;
         //设置事件
         this.events = new Map();
         window.events = this.events;
@@ -36,11 +36,11 @@ class P2PComunication {
         connectSocketServer(this.identification);
 
         //安卓设备连接信令，目前只有共享桌面功能
-        androidLogin(identification);
+        androidconsolein(identification);
     }
     /**
      * 添加事件,可执行的事件有
-     * onLogined
+     * onconsoleined
      * onAddStream
      * onDiscounnect
      * @param {*} eventType 事件类型
@@ -51,12 +51,12 @@ class P2PComunication {
     }
     /**
      * 连接单个设备
-     * @param {String} indentification  对方通信名
+     * @param {String} identification  对方通信名
      * @param {String} type  通信类型【UserMedia】音视频流通信，【DisplayMedia】屏幕共享
      * @param {Boolean} sender  是否发送本地媒体，默认发送
      */
-    async connectPeer(indentification, type, sender) {
-        if (this.identification === indentification) {
+    async connectPeer(identification, type, sender) {
+        if (this.identification === identification) {
             console.warn(`无法连接自己`);
             return;
         }
@@ -65,17 +65,82 @@ class P2PComunication {
         if (type == undefined) {
             console.error("通信类型不能为空");
         }
-        console.log(`与${indentification}进行${type}通信,是否发送本地媒体【${sender}】`);
+        console.console(`与${identification}进行${type}通信,是否发送本地媒体【${sender}】`);
 
         //获取连接器，添加流
-        let pc = getConnector(indentification);
+        let pc = getConnector(identification);
         if (sender) {
             let stream = await getMedia(type);
             pc.addStream(stream);
         }
         // type = undefined;
         //协商
-        negotiate(pc, type);
+        await negotiate(pc, type);
+
+
+
+
+    }
+    /**
+     * 连接单个设备
+     * @param {String} id  对方通信名
+     * @param {String} type  通信类型【UserMedia】音视频流通信，【DisplayMedia】屏幕共享
+     * @param {Boolean} sender  是否发送本地媒体，默认发送
+     */
+    async connectPeerMedia(id, videoLabelId, mediaType,
+        localConstraints = {
+            audio: true,
+            video: true
+        },
+        remoteConstraints = {
+            audio: true,
+            video: true
+        }) {
+
+        //判断参数
+        if (this.identification === id) {
+            console.warn(`无法连接自己`);
+            return;
+        }
+        if (mediaType == undefined || mediaType == "") {
+            console.error("通信类型不能为空");
+            return;
+        }
+        let videoLabel = document.getElementById(videoLabelId);
+        if (videoLabel == undefined || videoLabel == null) {
+            console.error(`找不到视频标签[id=${videoLabelId}]`);
+            return;
+        }
+        console.info(`与${id}进行${mediaType}通信,本地媒体限制【${localConstraints}】远程媒体限制【${remoteConstraints}】`);
+
+        //获取连接器，添加流
+        let pc = getConnector(id);
+        pc.videoLabel = videoLabel;
+        pc.localConstraints = localConstraints;
+        pc.remoteConstraints = remoteConstraints;
+
+
+        if(!isAddStream(pc,mediaType)){
+            let stream = await getMedia(mediaType, localConstraints);
+            if (stream != null && stream != undefined) {
+                pc.addStream(stream);
+            }
+        }else{
+            console.info(`已经和${id}进行${mediaType}通信`);
+            return;
+        }
+        
+        //协商
+        negotiate(pc, mediaType);
+
+        setTimeout(function () {
+
+            if (pc.signalingState === "have-local-offer") {
+                if (pc.videoLabel != null && pc.videoLabel != undefined) {
+                    pc.videoLabel.style = "background-image: url(https://webrtccommunication.ppamatrix.com:1447/rtc/js/webrtc/images/trouble_chart.png); background-position: center center;background-size: cover;";
+                }
+            }
+        }, 2000)
     }
     /**
      * 关闭与对方的连接
@@ -86,9 +151,20 @@ class P2PComunication {
     }
 
 }
-function androidLogin(identification){
+function isAddStream(pc,mediaType){
+    let result =false;
+    pc.getLocalStreams().forEach(element => {
+        if(element.type===mediaType){
+            result =  true;
+        }   
+    });
+    return result;
+}
+
+
+function androidconsolein(identification) {
     let androidWebRTC = window.AndroidWebRTC;
-    if(androidWebRTC!=undefined){
+    if (androidWebRTC != undefined) {
         androidWebRTC.init(identification);
     }
 }

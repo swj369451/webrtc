@@ -1,7 +1,7 @@
 import { sendCandidateTransportAddresses } from "../negotiation/CandidateNegotiate.js";
 import { createMediaOffer } from "../negotiation/MediaNegotiation.js";
 import { socket } from "../signing/Signing.js";
-import { disconnect, PeerConnectionList } from "./PeerConnctor.js";
+import { disconnect, getConnector, PeerConnectionList } from "./PeerConnctor.js";
 /**
  * 端到端连接器事件
  * @param {*} pc 
@@ -9,13 +9,14 @@ import { disconnect, PeerConnectionList } from "./PeerConnctor.js";
  */
 function addRTCPeerConnectEvent(pc, socketId) {
 
-    pc.onicecandidate = function(event) { handleIceCandidate(event, socketId); };
-    pc.onaddstream = function(event) { handleRemoteStreamAdded(event, socketId); };
-    pc.onremovestream = function(event) { handleRemoteStreamRemoved(event, socketId); };
-    pc.oniceconnectionstatechange = function(event) { handleiceconnectionstatechange(event, socketId); };
-    pc.onicecandidateerror = function(event) { handleicecandidateerror(event, socketId); };
-    pc.onconnectionstatechange = function(event) { handleconnectionstatechange(event, socketId); }
-    pc.negotiationneeded = function(event) { handlenegotiationneeded(event, socketId); }
+    pc.onicecandidate = function (event) { handleIceCandidate(event, socketId); };
+    pc.onaddstream = function (event) { handleRemoteStreamAdded(event, socketId); };
+    pc.onremovestream = function (event) { handleRemoteStreamRemoved(event, socketId); };
+    pc.oniceconnectionstatechange = function (event) { handleiceconnectionstatechange(event, socketId); };
+    pc.onicecandidateerror = function (event) { handleicecandidateerror(event, socketId); };
+    pc.onconnectionstatechange = function (event) { handleconnectionstatechange(event, socketId); }
+    pc.negotiationneeded = function (event) { handlenegotiationneeded(event, socketId); }
+    pc.onsignalingstatechange = function (event) { handleSignalingstatechange(event, pc); }
 }
 
 function handlenegotiationneeded(event, socketId) {
@@ -48,7 +49,7 @@ function handleconnectionstatechange(event, from) {
         createMediaOffer(event.currentTarget);
         setTimeout(() => {
             if (event.currentTarget.signalingState === "have-local-offer") {
-                disconnect(targetId);
+                disconnect(from);
             }
         }, 2000);
         console.log(`【重连ice】重新与${from}连接ice`)
@@ -58,12 +59,29 @@ function handleconnectionstatechange(event, from) {
     }
 }
 
+function handleSignalingstatechange(event, pc) {
+
+}
+
 async function handleRemoteStreamAdded(event, form) {
     console.log('Remote stream added.');
     if (window.events['onAddStream'] != undefined && window.events['onAddStream'] != null) {
         window.events['onAddStream'](event.stream, form);
     }
-    
+    let pc = getConnector(form);
+    if (pc == null || pc == undefined) {
+        return;
+    }
+    if (pc.videoLabel != null || pc.videoLabel != undefined) {
+        pc.videoLabel.srcObject = event.stream;
+    }
+    let receives = pc.getReceivers();
+    receives.forEach(function (receive) {
+        if (receive.track.kind === "video" && receive.track.muted === true) {
+            doorplateTitle.style = "background-image: url(https://webrtccommunication.ppamatrix.com:1447/rtc/js/webrtc/images/camera_chart.png); background-position: center center;background-size: cover;"
+        }
+    })
+
 }
 
 function handleRemoteStreamRemoved(event, from) {
@@ -72,17 +90,6 @@ function handleRemoteStreamRemoved(event, from) {
     removeVideoTag(from);
 }
 
-function handleiceconnectionstatechange(event, from) {}
+function handleiceconnectionstatechange(event, from) { }
 
-// function close(targetId) {
-//     // console.log(`【对方掉线】${targetId}已掉线`)
-//     // let pc = PeerConnectionList.get(targetId);
-//     // if (pc != undefined) {
-//     //     pc.close();
-//     //     PeerConnectionList.delete(targetId);
-//     //     deleteVideoTag(targetId);
-//     // }
-//     disconnect(targetId);
-    
-// }
 export { addRTCPeerConnectEvent }

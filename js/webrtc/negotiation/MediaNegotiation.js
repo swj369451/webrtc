@@ -44,7 +44,7 @@ async function onCreateOfferSuccess(pc, desc, type) {
         sendMessage({
             type: desc.type,
             sdp: desc.sdp,
-            from: window.indentification,
+            from: window.identification,
             to: pc.to,
             isUnidirectional,
             otherMediaConfig,
@@ -78,7 +78,7 @@ function createMediaAnswer(pc, mediaType) {
                 sendMessage({
                     type: event.type,
                     sdp: event.sdp,
-                    from: window.indentification,
+                    from: window.identification,
                     to: pc.to,
                     mediaType: mediaType
                 });

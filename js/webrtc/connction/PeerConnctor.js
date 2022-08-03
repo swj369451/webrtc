@@ -10,79 +10,58 @@ import { addRTCPeerConnectEvent } from "./PeerConnctorEvent.js";
  */
 let serverConfig = {
     "bundlePolicy": 'max-bundle',
-    "iceCandidatePoolSize":10,
+    // "iceCandidatePoolSize":10,
     "iceServers": [
         { "urls": "stun:stun.qq.com" },
-        // { "urls": "turn:101.35.181.216", username: "test", credential: "123" }
+        { "urls": "turn:101.35.181.216", username: "test", credential: "123" }
     ],
     // "iceTransportPolicy": "relay"
 };
 let PeerConnectionList = new Map();
 window.PeerConnections = PeerConnectionList;
 
-// /**
-//  * 给连接器添加新流
-//  */
-// function addStream(stream, PeerConnectionList) {
-//     console.log(`添加新流`)
-//     PeerConnectionList.forEach(element => {
-//         element.addStream(stream);
-//         // //重新发起协商
-//         createMediaOffer(element, "renegotiate");
-//     });
-// }
 /**
  * 进行协商
  * @param {*} stream      媒体流
  * @param {*} pc     连接器
  */
-function negotiate(pc, type) {
+async function negotiate(pc, type) {
     createMediaOffer(pc, type);
 }
 
-// /**
-//  * 创建连接器
-//  */
-// async function createPeerConnector(peerId) {
-//     console.log(`【${peerId}】连接：建立与连接方的端到端连接器`);
-//     let pc = new RTCPeerConnection(serverConfig);
-//     PeerConnectionList.set(peerId, pc)
-//     let userSteam = await getUserMeida();
-//     if (userSteam != undefined) {
-//         await pc.addStream(userSteam);
-//     }
-//     await addRTCPeerConnectEvent(pc, peerId);
-//     pc.to = peerId;
-//     return pc;
-// }
-
-function createConnector(indentification) {
+function createConnector(identification) {
     let pc = new RTCPeerConnection(serverConfig);
-    addRTCPeerConnectEvent(pc, indentification);
-    pc.to = indentification;
-    PeerConnectionList.set(indentification, pc);
+    addRTCPeerConnectEvent(pc, identification);
+    pc.to = identification;
+    PeerConnectionList.set(identification, pc);
     return pc;
 }
 
-function getConnector(indentification) {
-    let pc = PeerConnectionList.get(indentification);
+function getConnector(identification) {
+    let pc = PeerConnectionList.get(identification);
     if (pc == null || pc == undefined) {
-        pc = createConnector(indentification);
+        pc = createConnector(identification);
     }
     return pc;
 }
 
-function disconnect(indentification) {
-    let pc = PeerConnectionList.get(indentification);
+function disconnect(identification) {
+    let pc = PeerConnectionList.get(identification);
     if (pc != null && pc != undefined) {
+        //关闭pc
         pc.close();
-        PeerConnectionList.delete(indentification);
+        PeerConnectionList.delete(identification);
+        
+        //发送断开连接信息
         sendDiconnect(pc.to);
+
+        //回调
+        if (window.events['onDiscounnect'] != undefined && window.events['onDiscounnect'] != null) {
+            window.events['onDiscounnect'](identification);
+        }
     }
 
-    if (window.events['onDiscounnect'] != undefined && window.events['onDiscounnect'] != null) {
-        window.events['onDiscounnect'](indentification);
-    }
+    
 }
 
 export { PeerConnectionList, serverConfig, getConnector, disconnect, negotiate }

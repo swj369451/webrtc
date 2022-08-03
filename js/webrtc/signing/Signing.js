@@ -5,6 +5,7 @@
 import { collectCandidateTransportAddresses } from "../negotiation/CandidateNegotiate.js";
 import { receiveMediaFormatAnswer, receiveMediaOffer } from "../negotiation/MediaNegotiation.js";
 
+
 let socketServerUrl = "https://signaling.ppamatrix.com:1446";
 let socket;
 let connected;
@@ -63,7 +64,7 @@ function sendMessage(message) {
 function sendDiconnect(PeerIdentification) {
     sendMessage({
         type: 'disconnect',
-        from: window.indentification,
+        from: window.identification,
         to: PeerIdentification,
     });
 }

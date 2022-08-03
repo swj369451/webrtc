@@ -9,25 +9,23 @@ import { getConnector } from "./webrtc/connction/PeerConnctor.js";
 async function init(info) {
 
     //展示本地摄像头到屏幕
-    let userMediaSteam = await getMedia("UserMedia");
-    document.querySelector('video').srcObject = userMediaSteam
+    // let userMediaSteam = await getMedia("UserMedia");
+    // document.querySelector('video').srcObject = userMediaSteam
 
     //展示屏幕共享
     // let screenVideo = document.getElementById('screen-video');
     // castScreenStream(screenVideo);
-    let identification = 1111;
-    // let identification = prompt("请输入通信昵称");
-    // $("#identification").text($("#identification").text() + identification);
+
+    let identification = "11";
 
     let comunication = new P2PComunication(identification);
-
-    
     comunication.addEventListener("onLogined", (message) => {
         $('#info').text($('#info').text() + message)
     });
     comunication.addEventListener("onAddStream", (stream, identification) => {
         console.log("获取流");
-
+        let videoTag = createVideoTag(identification);
+        videoTag.srcObject = stream;
         if(info!=null){
             info.forEach(element => {
                 if(element.identification==identification){
@@ -42,25 +40,20 @@ async function init(info) {
     comunication.addEventListener("onDiscounnect", (identification) => {
         deleteVideoTag(identification);
     });
-    comunication.addEventListener("onRemoteStateChange", (identification,state) => {
-        
-    });
-
+    
     $("#connect").click(function (e) {
         let identification = document.getElementById("input").value;
         let connectType = $('input[name="connectType"]:checked').val();
         let share = $('input[name="share"]:checked').val()==="1"?true:false;
-        // comunication.connectPeer(identification, connectType, share);
+        comunication.connectPeer(identification, connectType, share);
 
-        let videoTag = createVideoTag(identification);
-        comunication.connectPeerMedia(identification,`video-${identification}`,connectType);
     });
     if(info!=null){
         info.forEach(element => {
             comunication.connectPeer(element.identification, "UserMedia", false);
         });
     }
-    comunication.connectPeerMedia("00011",`screen-video1`,"UserMedia");
+    
 
     //展示通信控件
     showControls();
