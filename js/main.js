@@ -15,9 +15,9 @@ async function init(info) {
     //展示屏幕共享
     // let screenVideo = document.getElementById('screen-video');
     // castScreenStream(screenVideo);
-    let identification = 1111;
-    // let identification = prompt("请输入通信昵称");
-    // $("#identification").text($("#identification").text() + identification);
+    // let identification = 1111;
+    let identification = prompt("请输入通信昵称");
+    $("#identification").text($("#identification").text() + identification);
 
     let comunication = new P2PComunication(identification);
 
@@ -51,16 +51,26 @@ async function init(info) {
         let connectType = $('input[name="connectType"]:checked').val();
         let share = $('input[name="share"]:checked').val()==="1"?true:false;
         // comunication.connectPeer(identification, connectType, share);
+        let localConstraints = {
+            audio: true,
+            video: true
+        }
+        if(!share){
+            localConstraints = {
+                audio: false,
+                video: false
+            }
+        }
 
         let videoTag = createVideoTag(identification);
-        comunication.connectPeerMedia(identification,`video-${identification}`,connectType);
+        comunication.connectPeerMedia(identification,`video-${identification}`,connectType,localConstraints);
     });
     if(info!=null){
         info.forEach(element => {
             comunication.connectPeer(element.identification, "UserMedia", false);
         });
     }
-    comunication.connectPeerMedia("00011",`screen-video1`,"UserMedia");
+    // comunication.connectPeerMedia("test-xiaoyuan2-Old-android",`screen-video1`,"DisplayMedia");
 
     //展示通信控件
     showControls();

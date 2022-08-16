@@ -76,9 +76,11 @@ async function handleRemoteStreamAdded(event, form) {
         pc.videoLabel.srcObject = event.stream;
     }
     let receives = pc.getReceivers();
-    receives.forEach(function (receive) {
+    receives.forEach( (receive)=> {
         if (receive.track.kind === "video" && receive.track.muted === true) {
-            doorplateTitle.style = "background-image: url(https://webrtccommunication.ppamatrix.com:1447/rtc/js/webrtc/images/camera_chart.png); background-position: center center;background-size: cover;"
+            if(pc.videoLabel!=null && pc.videoLabel!=undefined){
+                pc.videoLabel.style = "background-image: url(https://webrtccommunication.ppamatrix.com:1447/rtc/js/webrtc/images/camera_chart.png); background-position: center center;background-size: cover;"
+            }
         }
     })
 
@@ -87,7 +89,7 @@ async function handleRemoteStreamAdded(event, form) {
 function handleRemoteStreamRemoved(event, from) {
     console.log('Remote stream removed. Event: ', event);
     PeerConnectionList.delete(event.currentTarget.other);
-    removeVideoTag(from);
+    // removeVideoTag(from);
 }
 
 function handleiceconnectionstatechange(event, from) { }

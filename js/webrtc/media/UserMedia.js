@@ -13,6 +13,12 @@ async function getMedia(type, constraints = {
     video: true
 }) {
     let stream;
+
+    if (!constraints.video && !constraints.audio) {
+        return;
+    }
+
+
     if (type === "UserMedia") {
         if (userStream != undefined && userStream != null) {
             return userStream;

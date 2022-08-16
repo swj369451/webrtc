@@ -49,6 +49,9 @@ class P2PComunication {
     addEventListener(eventType, fun) {
         this.events[eventType] = fun;
     }
+
+
+
     /**
      * 连接单个设备
      * @param {String} identification  对方通信名
@@ -65,7 +68,7 @@ class P2PComunication {
         if (type == undefined) {
             console.error("通信类型不能为空");
         }
-        console.console(`与${identification}进行${type}通信,是否发送本地媒体【${sender}】`);
+        console.info(`与${identification}进行${type}通信,是否发送本地媒体【${sender}】`);
 
         //获取连接器，添加流
         let pc = getConnector(identification);
@@ -111,6 +114,12 @@ class P2PComunication {
             console.error(`找不到视频标签[id=${videoLabelId}]`);
             return;
         }
+        videoLabel.addEventListener("canplay", function () {
+            if (video.paused) {
+                video.play();
+            }
+        });
+        
         console.info(`与${id}进行${mediaType}通信,本地媒体限制【${localConstraints}】远程媒体限制【${remoteConstraints}】`);
 
         //获取连接器，添加流
@@ -120,16 +129,16 @@ class P2PComunication {
         pc.remoteConstraints = remoteConstraints;
 
 
-        if(!isAddStream(pc,mediaType)){
+        if (!isAddStream(pc, mediaType)) {
             let stream = await getMedia(mediaType, localConstraints);
             if (stream != null && stream != undefined) {
                 pc.addStream(stream);
             }
-        }else{
+        } else {
             console.info(`已经和${id}进行${mediaType}通信`);
             return;
         }
-        
+
         //协商
         negotiate(pc, mediaType);
 
@@ -140,7 +149,7 @@ class P2PComunication {
                     pc.videoLabel.style = "background-image: url(https://webrtccommunication.ppamatrix.com:1447/rtc/js/webrtc/images/trouble_chart.png); background-position: center center;background-size: cover;";
                 }
             }
-        }, 2000)
+        }, 5000)
     }
     /**
      * 关闭与对方的连接
@@ -151,17 +160,15 @@ class P2PComunication {
     }
 
 }
-function isAddStream(pc,mediaType){
-    let result =false;
+function isAddStream(pc, mediaType) {
+    let result = false;
     pc.getLocalStreams().forEach(element => {
-        if(element.type===mediaType){
-            result =  true;
-        }   
+        if (element.type === mediaType) {
+            result = true;
+        }
     });
     return result;
 }
-
-
 function androidconsolein(identification) {
     let androidWebRTC = window.AndroidWebRTC;
     if (androidWebRTC != undefined) {

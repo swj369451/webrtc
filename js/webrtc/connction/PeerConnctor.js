@@ -9,10 +9,11 @@ import { addRTCPeerConnectEvent } from "./PeerConnctorEvent.js";
  * 信令和中转服务器配置
  */
 let serverConfig = {
-    "bundlePolicy": 'max-bundle',
+    // "bundlePolicy": 'max-bundle',
     // "iceCandidatePoolSize":10,
     "iceServers": [
         { "urls": "stun:stun.qq.com" },
+        { "urls": "stun:signaling.ppamatrix.com" },
         { "urls": "turn:101.35.181.216", username: "test", credential: "123" }
     ],
     // "iceTransportPolicy": "relay"
