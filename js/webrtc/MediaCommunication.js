@@ -84,11 +84,15 @@ class P2PComunication {
 
 
     }
+
     /**
      * 连接单个设备
-     * @param {String} id  对方通信名
-     * @param {String} type  通信类型【UserMedia】音视频流通信，【DisplayMedia】屏幕共享
-     * @param {Boolean} sender  是否发送本地媒体，默认发送
+     * @param {*} id 对方id
+     * @param {*} videoLabelId 视频标签，不能包含source
+     * @param {*} mediaType 媒体类型【UserMedia】用户媒体(摄像头)，【DisplayMedia】屏幕媒体
+     * @param {*} localConstraints 本地是否传输媒体，默认为音视频都传
+     * @param {*} remoteConstraints 对等方是否传输媒体，默认为音视频都传
+     * @returns 
      */
     async connectPeerMedia(id, videoLabelId, mediaType,
         localConstraints = {
@@ -114,12 +118,19 @@ class P2PComunication {
             console.error(`找不到视频标签[id=${videoLabelId}]`);
             return;
         }
+        // videoLabel.setAttribute("muted", "muted");
+        let loadstart = false;
+        videoLabel.addEventListener("loadstart", function () {
+            loadstart = true;
+        });
         videoLabel.addEventListener("canplay", function () {
-            if (video.paused) {
-                video.play();
+            videoLabel.muted = true;
+            if (videoLabel.paused && loadstart) {
+                videoLabel.play();
             }
         });
-        
+
+
         console.info(`与${id}进行${mediaType}通信,本地媒体限制【${localConstraints}】远程媒体限制【${remoteConstraints}】`);
 
         //获取连接器，添加流
@@ -142,8 +153,8 @@ class P2PComunication {
         //协商
         negotiate(pc, mediaType);
 
+        //超时判断对方网络无法连通
         setTimeout(function () {
-
             if (pc.signalingState === "have-local-offer") {
                 if (pc.videoLabel != null && pc.videoLabel != undefined) {
                     pc.videoLabel.style = "background-image: url(https://webrtccommunication.ppamatrix.com:1447/rtc/js/webrtc/images/trouble_chart.png); background-position: center center;background-size: cover;";
@@ -160,6 +171,12 @@ class P2PComunication {
     }
 
 }
+/**
+ * 判断连接器是否已经添加指定媒体
+ * @param {*} pc 连接器
+ * @param {*} mediaType 媒体类型
+ * @returns 
+ */
 function isAddStream(pc, mediaType) {
     let result = false;
     pc.getLocalStreams().forEach(element => {
@@ -169,10 +186,14 @@ function isAddStream(pc, mediaType) {
     });
     return result;
 }
-function androidconsolein(identification) {
+/**
+ * 初始化安卓设备的桌面共享
+ * @param {*} id 
+ */
+function androidconsolein(id) {
     let androidWebRTC = window.AndroidWebRTC;
     if (androidWebRTC != undefined) {
-        androidWebRTC.init(identification);
+        androidWebRTC.init(id);
     }
 }
 

@@ -76,9 +76,9 @@ async function handleRemoteStreamAdded(event, form) {
         pc.videoLabel.srcObject = event.stream;
     }
     let receives = pc.getReceivers();
-    receives.forEach( (receive)=> {
+    receives.forEach((receive) => {
         if (receive.track.kind === "video" && receive.track.muted === true) {
-            if(pc.videoLabel!=null && pc.videoLabel!=undefined){
+            if (pc.videoLabel != null && pc.videoLabel != undefined) {
                 pc.videoLabel.style = "background-image: url(https://webrtccommunication.ppamatrix.com:1447/rtc/js/webrtc/images/camera_chart.png); background-position: center center;background-size: cover;"
             }
         }

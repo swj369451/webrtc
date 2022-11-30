@@ -9,15 +9,18 @@ import { addRTCPeerConnectEvent } from "./PeerConnctorEvent.js";
  * 信令和中转服务器配置
  */
 let serverConfig = {
-    // "bundlePolicy": 'max-bundle',
+    "bundlePolicy": 'max-bundle',
     // "iceCandidatePoolSize":10,
     "iceServers": [
         { "urls": "stun:stun.qq.com" },
         { "urls": "stun:signaling.ppamatrix.com" },
-        { "urls": "turn:101.35.181.216", username: "test", credential: "123" }
+        { "urls": "turn:139.9.45.150", username: "test", credential: "123" }
     ],
-    // "iceTransportPolicy": "relay"
+    "iceTransportPolicy": "relay"
 };
+/**
+ * 连接器集合
+ */
 let PeerConnectionList = new Map();
 window.PeerConnections = PeerConnectionList;
 
@@ -29,40 +32,53 @@ window.PeerConnections = PeerConnectionList;
 async function negotiate(pc, type) {
     createMediaOffer(pc, type);
 }
-
-function createConnector(identification) {
+/**
+ * 创建连接器
+ * @param {*} id 对等方id
+ * @returns 
+ */
+function createConnector(id) {
     let pc = new RTCPeerConnection(serverConfig);
-    addRTCPeerConnectEvent(pc, identification);
-    pc.to = identification;
-    PeerConnectionList.set(identification, pc);
+    addRTCPeerConnectEvent(pc, id);
+    pc.to = id;
+    PeerConnectionList.set(id, pc);
     return pc;
 }
 
-function getConnector(identification) {
-    let pc = PeerConnectionList.get(identification);
+/**
+ * 获取连接器
+ * @param {*} id 对等方id
+ * @returns 
+ */
+function getConnector(id) {
+    let pc = PeerConnectionList.get(id);
     if (pc == null || pc == undefined) {
-        pc = createConnector(identification);
+        pc = createConnector(id);
     }
     return pc;
 }
 
-function disconnect(identification) {
-    let pc = PeerConnectionList.get(identification);
+/**
+ * 断开连接器
+ * @param {*} id 对等方id
+ */
+function disconnect(id) {
+    let pc = PeerConnectionList.get(id);
     if (pc != null && pc != undefined) {
         //关闭pc
         pc.close();
-        PeerConnectionList.delete(identification);
-        
+        PeerConnectionList.delete(id);
+
         //发送断开连接信息
         sendDiconnect(pc.to);
 
         //回调
         if (window.events['onDiscounnect'] != undefined && window.events['onDiscounnect'] != null) {
-            window.events['onDiscounnect'](identification);
+            window.events['onDiscounnect'](id);
         }
     }
 
-    
+
 }
 
 export { PeerConnectionList, serverConfig, getConnector, disconnect, negotiate }

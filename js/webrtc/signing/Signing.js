@@ -1,23 +1,20 @@
 /**
  * 信令服务器
  */
-
 import { collectCandidateTransportAddresses } from "../negotiation/CandidateNegotiate.js";
 import { receiveMediaFormatAnswer, receiveMediaOffer } from "../negotiation/MediaNegotiation.js";
 
 
 let socketServerUrl = "https://signaling.ppamatrix.com:1446";
 let socket;
-let connected;
+let isConnected;
 let name;
 /**
  * 连接socket服务器
  */
 function connectSocketServer(identification) {
 
-   
-
-    if (connected) {
+    if (isConnected) {
         return;
     }
     socket = io.connect(socketServerUrl);
@@ -26,7 +23,7 @@ function connectSocketServer(identification) {
         console.log("socket服务器连接成功");
         socket.emit('login', identification);
         name = identification;
-        connected = true;
+        isConnected = true;
     });
     socket.on('log', function(array) {
         // console.log.apply(console, array);
@@ -44,7 +41,6 @@ function connectSocketServer(identification) {
             // disconnect(message.from);
         }
     });
-
     socket.on('logined', function() {
         console.log('设备登录成功');
         if (window.events['onLogined'] != undefined && window.events['onLogined'] != null) {
@@ -54,10 +50,9 @@ function connectSocketServer(identification) {
 }
 
 function sendMessage(message) {
-    if (connected && (name != null || name != undefined || name !== "")) {
+    if (isConnected && (name != null || name != undefined || name !== "")) {
         message.from = name;
     }
-    // console.log('Client sending message: ', message);
     socket.emit('message', message);
 }
 
