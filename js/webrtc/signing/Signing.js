@@ -8,7 +8,7 @@ import { receiveMediaFormatAnswer, receiveMediaOffer } from "../negotiation/Medi
 let socketServerUrl = "https://signaling.ppamatrix.com:1446";
 let socket;
 let isConnected;
-let name;
+let name;1
 /**
  * 连接socket服务器
  */
@@ -22,6 +22,7 @@ function connectSocketServer(identification) {
     socket.on('connect', function() {
         console.log("socket服务器连接成功");
         socket.emit('login', identification);
+        this.identification=identification;
         name = identification;
         isConnected = true;
     });
@@ -47,6 +48,21 @@ function connectSocketServer(identification) {
             window.events['onLogined']('设备登录成功');
         }
     });
+    socket.on('reconnect_failed', function(e) {
+        console.log("重连失败:" + e);
+    });
+    socket.on('reconnect', function(e) {
+        console.log("成功重连:" + e);
+        // login(this.peerid);
+        login(this.identification);
+    });
+    socket.on('reconnecting', function(e) {
+        console.log("正在重连:" + e);
+    });
+}
+function login(identification){
+    console.log("socket服务器连接成功");
+    socket.emit('login', identification);
 }
 
 function sendMessage(message) {
@@ -70,4 +86,4 @@ function check() {
 
 
 
-export { sendMessage, socket, connectSocketServer, sendDiconnect, check }
+export { sendMessage,  connectSocketServer, sendDiconnect, check }

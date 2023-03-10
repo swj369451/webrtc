@@ -5,6 +5,7 @@ import { createVideoTag, deleteVideoTag } from "./tagTool.js";
 import { getMedia } from "./webrtc/media/UserMedia.js";
 // import { reportInfo } from "./report/report.js";
 import { getConnector } from "./webrtc/connction/PeerConnctor.js";
+import { check } from "./webrtc/signing/Signing.js";
 
 async function init(info) {
 
@@ -64,6 +65,9 @@ async function init(info) {
 
         let videoTag = createVideoTag(identification);
         comunication.connectPeerMedia(identification,`video-${identification}`,connectType,localConstraints);
+    });
+    $("#signInfo").click(function (e) {
+       check();
     });
     if(info!=null){
         info.forEach(element => {
