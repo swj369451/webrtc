@@ -74,7 +74,7 @@ async function init(info) {
             comunication.connectPeer(element.identification, "UserMedia", false);
         });
     }
-    // comunication.connectPeerMedia("test-xiaoyuan2-Old-android",`screen-video1`,"DisplayMedia");
+   
 
     //展示通信控件
     showControls();
