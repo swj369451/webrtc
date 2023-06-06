@@ -14,9 +14,10 @@ let serverConfig = {
     "iceServers": [
         { "urls": "stun:stun.qq.com" },
         { "urls": "stun:signaling.ppamatrix.com" },
-        { "urls": "turn:139.9.45.150", username: "test", credential: "123" }
-    ],
-    "iceTransportPolicy": "relay"
+        { "urls": "turn:139.9.45.150", username: "test", credential: "123" },
+        { "urls": "turn:101.35.181.216", username: "test", credential: "123" },
+    ]
+    // "iceTransportPolicy": "relay"
 };
 /**
  * 连接器集合

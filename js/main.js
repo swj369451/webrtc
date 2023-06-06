@@ -39,13 +39,20 @@ async function init(info) {
         }
         let pc = getConnector(identification);
         // reportInfo(pc,identification);
+        let video = document.createElement("video");
+        video.setAttribute("autoplay", "autoplay");
+        video.setAttribute("playsinline", "true");
+        video.setAttribute("id", `video-${identification}`);
+        video.setAttribute("style", "width: 20vw;");
+        pc.videoLabel=video
     });
     comunication.addEventListener("onDiscounnect", (identification) => {
         deleteVideoTag(identification);
     });
-    comunication.addEventListener("onRemoteStateChange", (identification,state) => {
-        
+    comunication.addEventListener("onMessage", (message) => {
+        console.log()
     });
+    
 
     $("#connect").click(function (e) {
         let identification = document.getElementById("input").value;

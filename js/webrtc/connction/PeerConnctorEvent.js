@@ -35,7 +35,7 @@ function handleIceCandidate(event, from) {
             label: event.candidate.sdpMLineIndex,
             id: event.candidate.sdpMid,
             candidate: event.candidate.candidate,
-            from: socket.id,
+            from: socket.identification,
             to: from
         }
         sendCandidateTransportAddresses(candidateTransportAddresses)
@@ -46,13 +46,18 @@ function handleIceCandidate(event, from) {
 
 function handleconnectionstatechange(event, from) {
     if (event.currentTarget.iceConnectionState === "disconnected") {
-        createMediaOffer(event.currentTarget);
         setTimeout(() => {
-            if (event.currentTarget.signalingState === "have-local-offer") {
-                disconnect(from);
+            if (event.currentTarget.iceConnectionState === "disconnected") {
+                createMediaOffer(event.currentTarget);
+                setTimeout(() => {
+                    if (event.currentTarget.signalingState === "have-local-offer") {
+                        disconnect(from);
+                    }
+                }, 2000);
+                console.log(`【重连ice】重新与${from}连接ice`)
             }
-        }, 2000);
-        console.log(`【重连ice】重新与${from}连接ice`)
+        }, 1000);
+
     }
     if (event.currentTarget.iceConnectionState === "failed") {
         disconnect(targetId);
@@ -65,13 +70,15 @@ function handleSignalingstatechange(event, pc) {
 
 async function handleRemoteStreamAdded(event, form) {
     console.log('Remote stream added.');
-    if (window.events['onAddStream'] != undefined && window.events['onAddStream'] != null) {
-        window.events['onAddStream'](event.stream, form);
-    }
     let pc = getConnector(form);
+    if (window.events['onAddStream'] != undefined && window.events['onAddStream'] != null) {
+        window.events['onAddStream'](event.stream, form, pc);
+    }
+
     if (pc == null || pc == undefined) {
         return;
     }
+
     if (pc.videoLabel != null || pc.videoLabel != undefined) {
         pc.videoLabel.srcObject = event.stream;
     }

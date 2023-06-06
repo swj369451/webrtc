@@ -1,17 +1,10 @@
-/*
- * @Author: swj369451 swj369451@163.com
- * @Date: 2022-05-27 17:01:14
- * @LastEditors: swj369451 swj369451@163.com
- * @LastEditTime: 2022-07-03 15:39:22
- * @FilePath: \webrtc\js\MediaCommunication.js
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- */
+
 /**
  * 音视频媒体通信
  */
 import { getConnector, negotiate, disconnect } from "./connction/PeerConnctor.js"
 import { getMedia } from "./media/UserMedia.js";
-import { connectSocketServer } from "./signing/Signing.js";
+import { connectSocketServer,sendMessage } from "./signing/Signing.js";
 
 
 /**
@@ -20,7 +13,11 @@ import { connectSocketServer } from "./signing/Signing.js";
  */
 class P2PComunication {
 
-    constructor(identification) {
+    constructor(identification,peerInfo) {
+        if(peerInfo==undefined){
+            peerInfo=""
+        }
+
         //设置标识名
         if (identification == null || identification == undefined || identification === "") {
             console.error("通信名不能为空");
@@ -33,7 +30,7 @@ class P2PComunication {
         window.events = this.events;
 
         //连接信令
-        connectSocketServer(this.identification);
+        connectSocketServer(this.identification,peerInfo);
 
         //安卓设备连接信令，目前只有共享桌面功能
         androidconsolein(identification);
@@ -169,6 +166,7 @@ class P2PComunication {
     closePeer(identification) {
         disconnect(identification);
     }
+
 
 }
 /**

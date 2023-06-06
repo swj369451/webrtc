@@ -3,33 +3,33 @@
  */
 import { collectCandidateTransportAddresses } from "../negotiation/CandidateNegotiate.js";
 import { receiveMediaFormatAnswer, receiveMediaOffer } from "../negotiation/MediaNegotiation.js";
-
+import { disconnect } from "../connction/PeerConnctor.js"
 
 let socketServerUrl = "https://signaling.ppamatrix.com:1446";
 let socket;
-let isConnected;
-let name; 1
+let isConnected = false;
+let isLogin = false;
+let name;
 /**
  * 连接socket服务器
  */
-function connectSocketServer(identification) {
-
-    if (isConnected) {
-        return;
-    }
+function connectSocketServer(identification,peerInfo) {
+    
+    // if (isConnected) {
+    //     return;
+    // }
     socket = io.connect(socketServerUrl);
-
+    socket.identification = identification
     socket.on('connect', function () {
-        console.log("socket服务器连接成功");
-        socket.emit('login', identification);
-        this.identification = identification;
-        name = identification;
-        isConnected = true;
+        loginSinaling(this.identification,peerInfo);
     });
     socket.on('log', function (array) {
         // console.log.apply(console, array);
     });
     socket.on('message', function (message) {
+        if (window.events['onMessage'] != undefined && window.events['onMessage'] != null) {
+            window.events['onMessage'](message);
+        }
         console.log(`收到来自${message.from}的${message.type}类型消息`);
         if (message.type === 'offer') {
             receiveMediaOffer(message);
@@ -39,7 +39,7 @@ function connectSocketServer(identification) {
             collectCandidateTransportAddresses(message);
             // console.log(`【收到的ice】=${message.candidate}`)
         } else if (message.type === 'disconnect') {
-            // disconnect(message.from);
+            disconnect(message.from);
         }
     });
     socket.on('logined', function () {
@@ -47,14 +47,18 @@ function connectSocketServer(identification) {
         if (window.events['onLogined'] != undefined && window.events['onLogined'] != null) {
             window.events['onLogined']('设备登录成功');
         }
+        isLogin = true;
     });
     socket.on('reconnect_failed', function (e) {
         console.log("重连失败:" + e);
+        isLogin = false;
+        isConnected = false;
     });
     socket.on('reconnect', function (e) {
         console.log("成功重连:" + e);
+        isConnected = true;
         // login(this.peerid);
-        login(this.identification);
+        loginSinaling(this.identification);
     });
     socket.on('reconnecting', function (e) {
         console.log("正在重连:" + e);
@@ -62,10 +66,33 @@ function connectSocketServer(identification) {
     socket.on('anything', function (e) {
         console.log(`${Date()}【${this.PeerIdentification}】` + e);
     });
+    socket.on('disconnect', function () {
+        console.log("断开连接:");
+        isLogin = false;
+        isConnected = false;
+        tryConnect(this);
+    });
 }
-function login(identification) {
-    console.log("socket服务器连接成功");
-    socket.emit('login', identification);
+function tryConnect(socket) {
+    console.log("检测并尝试重新连接");
+    if (!socket.connected) {
+        let tryConnect = setInterval(function () {
+            console.log("重新连接中");
+            socket.connect();
+            if (socket.connected && isConnected && isLogin) {
+                console.log("已经重新连接，断开检测");
+                clearInterval(tryConnect)
+            }
+        }, 2000);
+    }
+
+}
+function loginSinaling(identification,peerInfo) {
+    console.log(identification + "登录信令服务器");
+    socket.emit('login', identification,peerInfo);
+    // this.identification = identification;
+    name = identification;
+    isConnected = true;
 }
 
 function sendMessage(message) {
