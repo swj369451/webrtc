@@ -1,5 +1,5 @@
 # webrtc
-webrtc
+webrtc 网页版本。信令服务和中转服务器还没保存到git上
 # Release notes
 - v0.0.1
 初始化版本
