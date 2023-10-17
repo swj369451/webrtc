@@ -1,10 +1,17 @@
-
+/*
+ * @Author: swj369451 swj369451@163.com
+ * @Date: 2022-05-27 17:01:14
+ * @LastEditors: swj369451 swj369451@163.com
+ * @LastEditTime: 2022-07-03 15:39:22
+ * @FilePath: \webrtc\js\MediaCommunication.js
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 /**
  * 音视频媒体通信
  */
 import { getConnector, negotiate, disconnect } from "./connction/PeerConnctor.js"
 import { getMedia } from "./media/UserMedia.js";
-import { connectSocketServer,sendMessage } from "./signing/Signing.js";
+import { connectSocketServer } from "./signing/Signing.js";
 
 
 /**
@@ -13,11 +20,7 @@ import { connectSocketServer,sendMessage } from "./signing/Signing.js";
  */
 class P2PComunication {
 
-    constructor(identification,peerInfo) {
-        if(peerInfo==undefined){
-            peerInfo=""
-        }
-
+    constructor(identification, peerInfo) {
         //设置标识名
         if (identification == null || identification == undefined || identification === "") {
             console.error("通信名不能为空");
@@ -30,7 +33,7 @@ class P2PComunication {
         window.events = this.events;
 
         //连接信令
-        connectSocketServer(this.identification,peerInfo);
+        connectSocketServer(this.identification, peerInfo);
 
         //安卓设备连接信令，目前只有共享桌面功能
         androidconsolein(identification);
@@ -68,7 +71,7 @@ class P2PComunication {
         console.info(`与${identification}进行${type}通信,是否发送本地媒体【${sender}】`);
 
         //获取连接器，添加流
-        let pc = getConnector(identification);
+        let pc = await getConnector(identification);
         if (sender) {
             let stream = await getMedia(type);
             pc.addStream(stream);
@@ -81,15 +84,11 @@ class P2PComunication {
 
 
     }
-
     /**
      * 连接单个设备
-     * @param {*} id 对方id
-     * @param {*} videoLabelId 视频标签，不能包含source
-     * @param {*} mediaType 媒体类型【UserMedia】用户媒体(摄像头)，【DisplayMedia】屏幕媒体
-     * @param {*} localConstraints 本地是否传输媒体，默认为音视频都传
-     * @param {*} remoteConstraints 对等方是否传输媒体，默认为音视频都传
-     * @returns 
+     * @param {String} id  对方通信名
+     * @param {String} type  通信类型【UserMedia】音视频流通信，【DisplayMedia】屏幕共享
+     * @param {Boolean} sender  是否发送本地媒体，默认发送
      */
     async connectPeerMedia(id, videoLabelId, mediaType,
         localConstraints = {
@@ -115,7 +114,7 @@ class P2PComunication {
             console.error(`找不到视频标签[id=${videoLabelId}]`);
             return;
         }
-        // videoLabel.setAttribute("muted", "muted");
+        videoLabel.setAttribute("muted", "muted");
         let loadstart = false;
         videoLabel.addEventListener("loadstart", function () {
             loadstart = true;
@@ -123,6 +122,7 @@ class P2PComunication {
         videoLabel.addEventListener("canplay", function () {
             videoLabel.muted = true;
             if (videoLabel.paused && loadstart) {
+
                 videoLabel.play();
             }
         });
@@ -131,7 +131,7 @@ class P2PComunication {
         console.info(`与${id}进行${mediaType}通信,本地媒体限制【${localConstraints}】远程媒体限制【${remoteConstraints}】`);
 
         //获取连接器，添加流
-        let pc = getConnector(id);
+        let pc = await getConnector(id);
         pc.videoLabel = videoLabel;
         pc.localConstraints = localConstraints;
         pc.remoteConstraints = remoteConstraints;
@@ -150,8 +150,8 @@ class P2PComunication {
         //协商
         negotiate(pc, mediaType);
 
-        //超时判断对方网络无法连通
         setTimeout(function () {
+
             if (pc.signalingState === "have-local-offer") {
                 if (pc.videoLabel != null && pc.videoLabel != undefined) {
                     pc.videoLabel.style = "background-image: url(https://webrtccommunication.ppamatrix.com:1447/rtc/js/webrtc/images/trouble_chart.png); background-position: center center;background-size: cover;";
@@ -167,14 +167,29 @@ class P2PComunication {
         disconnect(identification);
     }
 
+    async muted(identification) {
+        let pc =await getConnector(identification);
+        // 获取本地音频轨道
+        const audioTracks = pc.getSenders().map(sender => sender.track);
+
+        // 设置麦克风静音
+        audioTracks.forEach(track => {
+            track.enabled = false; // 将麦克风静音
+        });
+    }
+
+    async open(identification) {
+        let pc =await getConnector(identification);
+        // 获取本地音频轨道
+        const audioTracks = pc.getSenders().map(sender => sender.track);
+
+        // 设置麦克风静音
+        audioTracks.forEach(track => {
+            track.enabled = true; // 将麦克风静音
+        });
+    }
 
 }
-/**
- * 判断连接器是否已经添加指定媒体
- * @param {*} pc 连接器
- * @param {*} mediaType 媒体类型
- * @returns 
- */
 function isAddStream(pc, mediaType) {
     let result = false;
     pc.getLocalStreams().forEach(element => {
@@ -184,14 +199,10 @@ function isAddStream(pc, mediaType) {
     });
     return result;
 }
-/**
- * 初始化安卓设备的桌面共享
- * @param {*} id 
- */
-function androidconsolein(id) {
+function androidconsolein(identification) {
     let androidWebRTC = window.AndroidWebRTC;
     if (androidWebRTC != undefined) {
-        androidWebRTC.init(id);
+        androidWebRTC.init(identification);
     }
 }
 

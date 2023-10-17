@@ -45,23 +45,44 @@ function handleIceCandidate(event, from) {
 }
 
 function handleconnectionstatechange(event, from) {
-    if (event.currentTarget.iceConnectionState === "disconnected") {
-        setTimeout(() => {
-            if (event.currentTarget.iceConnectionState === "disconnected") {
-                createMediaOffer(event.currentTarget);
-                setTimeout(() => {
-                    if (event.currentTarget.signalingState === "have-local-offer") {
-                        disconnect(from);
-                    }
-                }, 2000);
-                console.log(`【重连ice】重新与${from}连接ice`)
-            }
-        }, 1000);
+    // if (event.currentTarget.iceConnectionState === "disconnected") {
+    //     setTimeout(() => {
+    //         if (event.currentTarget.iceConnectionState === "disconnected") {
+    //             createMediaOffer(event.currentTarget);
+    //             setTimeout(() => {
+    //                 if (event.currentTarget.signalingState === "have-local-offer") {
+    //                     disconnect(from);
+    //                 }
+    //             }, 2000);
+    //             console.log(`【重连ice】重新与${from}连接ice`)
+    //         }
+    //     }, 1000);
 
+    // }
+    if (event.currentTarget.intervalId == null || event.currentTarget.intervalId == undefined) {
+        const intervalId = setInterval(function () {
+            if (event.currentTarget.iceConnectionState === "connected"
+                || event.currentTarget.signalingState === "closed") {
+                clearInterval(intervalId);
+            }
+            if (event.currentTarget.iceConnectionState !== "connected"
+            && event.currentTarget.signalingState !== "closed") {
+                setTimeout(() => {
+                    if (event.currentTarget.iceConnectionState !== "connected") {
+                        createMediaOffer(event.currentTarget);
+                        console.log(`【重连ice】重新与${from}连接ice`)
+                    }
+                }, 200);
+            }
+
+        }, 1000);
+        event.currentTarget.intervalId = intervalId;
     }
-    if (event.currentTarget.iceConnectionState === "failed") {
-        disconnect(targetId);
-    }
+
+
+    // if (event.currentTarget.iceConnectionState === "failed") {
+    //     disconnect(targetId);
+    // }
 }
 
 function handleSignalingstatechange(event, pc) {
@@ -70,7 +91,7 @@ function handleSignalingstatechange(event, pc) {
 
 async function handleRemoteStreamAdded(event, form) {
     console.log('Remote stream added.');
-    let pc = getConnector(form);
+    let pc = await getConnector(form);
     if (window.events['onAddStream'] != undefined && window.events['onAddStream'] != null) {
         window.events['onAddStream'](event.stream, form, pc);
     }

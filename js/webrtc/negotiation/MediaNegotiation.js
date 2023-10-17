@@ -94,7 +94,7 @@ function createMediaAnswer(pc, mediaType) {
 async function receiveMediaOffer(message) {
     console.log(`收到媒体通信协商【${message}】`);
 
-    let pc = getConnector(message.from);
+    let pc = await getConnector(message.from);
     if (message.mediaType != undefined) {
 
         let flag = true;

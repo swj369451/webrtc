@@ -1,11 +1,10 @@
 
 'use strict';
 // Put variables in global scope to make them available to the browser console.
-//默认音视频设置
-// const constraints = {
-//     audio: true,
-//     video: true
-// };
+const constraints = {
+    audio: true,
+    video: true
+};
 let userStream;
 let screenStream;
 
@@ -18,6 +17,8 @@ async function getMedia(type, constraints = {
     if (!constraints.video && !constraints.audio) {
         return;
     }
+
+
     if (type === "UserMedia") {
         if (userStream != undefined && userStream != null) {
             return userStream;
@@ -29,6 +30,8 @@ async function getMedia(type, constraints = {
                 userStream.type = "UserMedia";
                 userStream.onremovetrack = handleOnRemovetrack;
                 userStream.onaddtrack = handleOnAddtrack;
+
+
             }),
             (error) => {
                 handleError(error)
@@ -41,6 +44,8 @@ async function getMedia(type, constraints = {
     }
     return stream;
 }
+
+
 /**
  * 获取屏幕流
  */

@@ -14,14 +14,12 @@ let serverConfig = {
     "iceServers": [
         { "urls": "stun:stun.qq.com" },
         { "urls": "stun:signaling.ppamatrix.com" },
+        //  { "urls": "turn:101.35.181.216", username: "test", credential: "123" },
         { "urls": "turn:139.9.45.150", username: "test", credential: "123" },
-        { "urls": "turn:101.35.181.216", username: "test", credential: "123" },
-    ]
-    // "iceTransportPolicy": "relay"
+        { "urls": "turn:139.9.227.139", username: "test", credential: "123" },
+    ],
+    //  "iceTransportPolicy": "relay"
 };
-/**
- * 连接器集合
- */
 let PeerConnectionList = new Map();
 window.PeerConnections = PeerConnectionList;
 
@@ -33,49 +31,67 @@ window.PeerConnections = PeerConnectionList;
 async function negotiate(pc, type) {
     createMediaOffer(pc, type);
 }
-/**
- * 创建连接器
- * @param {*} id 对等方id
- * @returns 
- */
-function createConnector(id) {
-    let pc = new RTCPeerConnection(serverConfig);
-    addRTCPeerConnectEvent(pc, id);
-    pc.to = id;
-    PeerConnectionList.set(id, pc);
+
+async function createConnector(identification) {
+    // const p = new Promise((resolve, reject) => {
+    // await $.get('https://webrtccommunication.ppamatrix.com:1447/rtc/js/webrtc/connction/RTCConfiguration.json',
+    //     function (data) {
+    //         // 请求成功时的处理逻辑
+    //         console.log(data);
+    //         serverConfig = data;
+    //         let pc = new RTCPeerConnection(serverConfig);
+    //         addRTCPeerConnectEvent(pc, identification);
+    //         pc.to = identification;
+    //         PeerConnectionList.set(identification, pc);
+    //         resolve(pc);
+    //     })
+    //     .fail(function (xhr, status, error) {
+    //         // 失败就用默认的地址
+    //     });
+    let pc;
+    await fetch('https://webrtccommunication.ppamatrix.com:1447/rtc/js/webrtc/connction/RTCConfiguration.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+            // serverConfig = data;
+            pc = new RTCPeerConnection(serverConfig);
+            addRTCPeerConnectEvent(pc, identification);
+            pc.to = identification;
+            PeerConnectionList.set(identification, pc);
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+    // })
     return pc;
 }
 
-/**
- * 获取连接器
- * @param {*} id 对等方id
- * @returns 
- */
-function getConnector(id) {
-    let pc = PeerConnectionList.get(id);
+async function getConnector(identification) {
+    let pc = PeerConnectionList.get(identification);
     if (pc == null || pc == undefined) {
-        pc = createConnector(id);
+        pc = await createConnector(identification);
     }
-    return pc;
+    return pc
 }
 
-/**
- * 断开连接器
- * @param {*} id 对等方id
- */
-function disconnect(id) {
-    let pc = PeerConnectionList.get(id);
+function disconnect(identification) {
+    let pc = PeerConnectionList.get(identification);
     if (pc != null && pc != undefined) {
         //关闭pc
         pc.close();
-        PeerConnectionList.delete(id);
+        PeerConnectionList.delete(identification);
 
         //发送断开连接信息
         sendDiconnect(pc.to);
 
         //回调
         if (window.events['onDiscounnect'] != undefined && window.events['onDiscounnect'] != null) {
-            window.events['onDiscounnect'](id);
+            window.events['onDiscounnect'](identification);
         }
     }
 

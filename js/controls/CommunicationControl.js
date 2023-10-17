@@ -103,20 +103,20 @@ function showControls() {
     
         });
     }
-    //播放
-    var input = document.getElementById("file"); //input file
-    input.onchange = function(event) {
-        var file = event.currentTarget.files[0]
-        if (file) {
-            var reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = function(e) {
-                let video = document.getElementById("screen-video");
-                video.src = e.target.result;
+    // //播放
+    // var input = document.getElementById("file"); //input file
+    // input.onchange = function(event) {
+    //     var file = event.currentTarget.files[0]
+    //     if (file) {
+    //         var reader = new FileReader();
+    //         reader.readAsDataURL(file);
+    //         reader.onload = function(e) {
+    //             let video = document.getElementById("screen-video");
+    //             video.src = e.target.result;
     
-            }
-        }
-    }
+    //         }
+    //     }
+    // }
 
 
 

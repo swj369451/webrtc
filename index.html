@@ -17,32 +17,24 @@
         <span id="errorNote" style="color: red;"></span>
         <div style="display: flex;">
             <video id="gum-local" style=" height:25vh;background-color: azure;;" autoplay playsinline muted></video>
-            <!-- <video id="screen-video" style=" height:25vh; background-color: azure;" autoplay playsinline muted></video>
-            <video id="screen-video1" style=" height:25vh; background-color: azure;" autoplay playsinline muted></video> -->
-            <!-- 视频文件播放 -->
-            <div id="playLabel" style="height:25vh; background-color: royalblue; display: flex;">
-                <input id="file" type="file"/>
-                <video id="playVideoLable"  style="height:25vh; background-color: azure;" autoplay playsinline
-                    muted>
-                </video>
-            </div>
+            <video id="screen-video" style=" height:25vh; background-color: azure;" autoplay playsinline muted></video>
+            <video id="screen-video1" style=" height:25vh; background-color: azure;" autoplay playsinline muted></video>
             <div>
-                <input id="input"><br/>
-            通信类型：<input type="radio" name="connectType" value="UserMedia" checked="checked">视频
-            <input type="radio" name="connectType" value="DisplayMedia" >桌面<br/>
-            是否共享媒体：<input type="radio" name="share" value="1" checked="checked">是
-            <input type="radio" name="share" value="0" >否
-            <button id="connect">连接</button>
+                <input id="input"><br />
+                通信类型：<input type="radio" name="connectType" value="UserMedia" checked="checked">视频
+                <input type="radio" name="connectType" value="DisplayMedia">桌面<br />
+                是否共享媒体：<input type="radio" name="share" value="1" checked="checked">是
+                <input type="radio" name="share" value="0">否
+                <button id="connect">连接</button>
             </div>
-            
+
             <button id="check">获取已连接</button>
-    
+
             <button id="record">开启录制</button>
             <button id="screensharingBtn">开启屏幕共享</button>
             <button id="videoBtn">关闭画面</button>
             <button id="audioBtn">关闭声音</button>
             <button id="iceBtn">显示ice信息</button>
-            <button id="signInfo">信令连接信息</button>
             <div id="container" style="font-size: 40px; display: none;">
 
                 <!-- <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a>
@@ -162,10 +154,11 @@
                    title="View source for this page on GitHub" id="viewSource">View source on GitHub</a> -->
             </div>
         </div>
+        <video id="peep" autoplay muted></video>
     </div>
+    <button id="muted">muted</button>
+    <button id = "open">open</button>
     <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-    <!-- <script script src="./js/plugin/RecordRTC.js"></script> -->
-    <!-- <script src="./js/plugin/EBML.js"></script> -->
     <script src="./js/main.js" type="module"></script>
     <script src="./js/plugin/adapter.js"></script>
     <script src="./js/plugin/socket.io.js"></script>
