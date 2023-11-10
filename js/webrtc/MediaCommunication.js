@@ -20,9 +20,15 @@ import { connectSocketServer } from "./signing/Signing.js";
  */
 class P2PComunication {
 
+    /**
+     * 
+     * @param {*} identification 自己的通信id
+     * @param {*} peerInfo 
+     * @returns 
+     */
     constructor(identification, peerInfo) {
         //设置标识名
-        if (identification == null || identification == undefined || identification === "") {
+        if (identification == null || identification === "") {
             console.error("通信名不能为空");
             return;
         }
@@ -36,7 +42,7 @@ class P2PComunication {
         connectSocketServer(this.identification, peerInfo);
 
         //安卓设备连接信令，目前只有共享桌面功能
-        androidconsolein(identification);
+        // androidconsolein(identification);
     }
     /**
      * 添加事件,可执行的事件有
@@ -166,29 +172,6 @@ class P2PComunication {
     closePeer(identification) {
         disconnect(identification);
     }
-
-    async muted(identification) {
-        let pc =await getConnector(identification);
-        // 获取本地音频轨道
-        const audioTracks = pc.getSenders().map(sender => sender.track);
-
-        // 设置麦克风静音
-        audioTracks.forEach(track => {
-            track.enabled = false; // 将麦克风静音
-        });
-    }
-
-    async open(identification) {
-        let pc =await getConnector(identification);
-        // 获取本地音频轨道
-        const audioTracks = pc.getSenders().map(sender => sender.track);
-
-        // 设置麦克风静音
-        audioTracks.forEach(track => {
-            track.enabled = true; // 将麦克风静音
-        });
-    }
-
 }
 function isAddStream(pc, mediaType) {
     let result = false;
@@ -199,11 +182,4 @@ function isAddStream(pc, mediaType) {
     });
     return result;
 }
-function androidconsolein(identification) {
-    let androidWebRTC = window.AndroidWebRTC;
-    if (androidWebRTC != undefined) {
-        androidWebRTC.init(identification);
-    }
-}
-
 export { P2PComunication }

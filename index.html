@@ -16,8 +16,8 @@
         <span id="info" style="color: darkcyan;"></span>
         <span id="errorNote" style="color: red;"></span>
         <div style="display: flex;">
-            <video id="gum-local" style=" height:25vh;background-color: azure;;" autoplay playsinline muted></video>
-            <video id="screen-video" style=" height:25vh; background-color: azure;" autoplay playsinline muted></video>
+            <video id="local-camera" style=" height:25vh;background-color: azure;;" autoplay playsinline muted></video>
+            <video id="local-screen" style=" height:25vh; background-color: azure;" autoplay playsinline muted></video>
             <video id="screen-video1" style=" height:25vh; background-color: azure;" autoplay playsinline muted></video>
             <div>
                 <input id="input"><br />
@@ -36,34 +36,6 @@
             <button id="audioBtn">关闭声音</button>
             <button id="iceBtn">显示ice信息</button>
             <div id="container" style="font-size: 40px; display: none;">
-
-                <!-- <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a>
-                    <span>Trickle ICE</span></h1>
-            
-                <section>
-            
-                    <p>This page tests the trickle ICE functionality in a WebRTC implementation. It creates a PeerConnection with
-                        the specified ICEServers, and then starts candidate gathering for a session with a single audio stream. As
-                        candidates are gathered, they are displayed in the text box below, along with an indication when candidate
-                        gathering is complete.</p>
-            
-                    <p>Note that if no getUserMedia permissions for this origin are persisted only candidates from a single
-                        interface will be gathered in Chrome. See <a
-                                href="https://tools.ietf.org/html/draft-ietf-rtcweb-ip-handling-01">the RTCWEB IP address handling
-                            recommendations draft</a> for details.<span id="getUserMediaPermissions">You have given permission, candidate from multiple interface will be gathered.</span>
-                    </p>
-            
-                    <p>Individual STUN and TURN servers can be added using the Add server / Remove server controls below; in
-                        addition, the type of candidates released to the application can be controlled via the IceTransports
-                        constraint.</p>
-            
-                    <p>If you test a STUN server, it works if you can gather a candidate with type "srflx".
-                       If you test a TURN server, it works if you can gather a candidate with type "relay".</p>
-                    <p>If you test just a single TURN/UDP server, this page even allows you to detect when you are using the wrong
-                        credential to authenticate.</p>
-            
-                </section> -->
-
                 <section id="iceServers" style="display: none;">
 
                     <h2>ICE servers</h2>
@@ -156,8 +128,6 @@
         </div>
         <video id="peep" autoplay muted></video>
     </div>
-    <button id="muted">muted</button>
-    <button id = "open">open</button>
     <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="./js/main.js" type="module"></script>
     <script src="./js/plugin/adapter.js"></script>

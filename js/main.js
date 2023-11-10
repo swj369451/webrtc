@@ -8,16 +8,23 @@ import { getConnector } from "./webrtc/connction/PeerConnctor.js";
 
 async function init() {
 
-    //展示本地摄像头到屏幕
-    //    let userMediaSteam = await getMedia("UserMedia");
-    //    document.querySelector('video').srcObject = userMediaSteam
+    // 展示本地摄像头到屏幕
+    getMedia("UserMedia")
+        .then(stream => {
+            // console.log(stream)
+            document.getElementById('local-camera').srcObject = stream
+        });
 
     //展示屏幕共享
-    // let screenVideo = document.getElementById('screen-video');
-    // castScreenStream(screenVideo);
+    // getMedia("DisplayMedia")
+    //     .then(stream => {
+    //         console.log(stream)
+    //         document.getElementById('local-screen').srcObject = stream
+    //     })
+    //     .catch((error) => {
+    //         console.error("getUserMedia failed:", error);
+    //     });
 
-    //  let identification = prompt("请输入通信昵称");
-    // $("#identification").text($("#identification").text() + identification);
     let identification = "0002";
     let comunication = new P2PComunication(identification);
     comunication.addEventListener("onLogined", (message) => {

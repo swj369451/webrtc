@@ -1,66 +1,60 @@
 
 'use strict';
-// Put variables in global scope to make them available to the browser console.
-const constraints = {
-    audio: true,
-    video: true
-};
-let userStream;
-let screenStream;
 
-async function getMedia(type, constraints = {
-    audio: true,
-    video: true
-}) {
-    let stream;
-
-    if (!constraints.video && !constraints.audio) {
-        return;
-    }
-
-
+/**
+ * 获取媒体
+ * @param {*} type  媒体类型，有两种，分别是摄像头【UserMedia】和桌面共享【DisplayMedia】
+ * @param {*} constraints 媒体限制
+ * @returns 
+ */
+async function getMedia(type, constraints = { audio: true, video: true }) {
+    // 获取媒体流
     if (type === "UserMedia") {
-        if (userStream != undefined && userStream != null) {
-            return userStream;
-        }
-        await navigator.mediaDevices.getUserMedia(constraints)
-            .then((resolve) => {
-                userStream = resolve;
-                stream = resolve;
-                userStream.type = "UserMedia";
-                userStream.onremovetrack = handleOnRemovetrack;
-                userStream.onaddtrack = handleOnAddtrack;
-
-
-            }),
-            (error) => {
-                handleError(error)
-            }
+        return getUserMedia(constraints)
     } else if (type === "DisplayMedia") {
-        stream = await getScreenStream(constraints);
+        return getScreenStream(constraints);
     } else {
-        console.error(`连接类型【${type}】不支持`);
+        console.error(`不支持获取媒体类型【${type}】`);
         return null;
     }
-    return stream;
 }
-
+/**
+ * 获取用户媒体
+ * @param {*} constraints 
+ * @returns 
+ */
+function getUserMedia(constraints) {
+    return new Promise((resolve, reject) => {
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then((stream) => {
+                resolve(stream)
+                stream.type = "UserMedia";
+                stream.onremovetrack = handleOnRemovetrack;
+                stream.onaddtrack = handleOnAddtrack;
+            })
+            .catch((error) => {
+                reject(error)
+                handleError(error, constraints)
+            })
+    })
+}
 
 /**
  * 获取屏幕流
  */
-async function getScreenStream(constraints) {
-    if (screenStream == undefined || screenStream == null) {
-        await navigator.mediaDevices.getDisplayMedia(constraints)
+function getScreenStream(constraints) {
+    return new Promise((resolve, reject) => {
+        navigator.mediaDevices.getDisplayMedia(constraints)
             .then((stream) => {
-                screenStream = stream;
-                screenStream.type = "DisplayMedia";
-            }), (error) => {
-                console.error(`getDisplayMedia error: ${error.name}`, error);
-            }
-    }
-    return screenStream;
+                stream.type = "DisplayMedia"
+                resolve(stream)
+            })
+            .catch((error) => {
+                reject(error)
+            })
+    })
 }
+
 async function enumerateDevices() {
     navigator.mediaDevices.enumerateDevices().then((resolve) => {
         console.log('【当前可用设备】');
@@ -71,14 +65,13 @@ async function enumerateDevices() {
 function handleSuccess(stream) {
     const videoTracks = stream.getVideoTracks();
     const audioTracks = stream.getAudioTracks();
-    console.log('Got stream with constraints:', constraints);
     if (videoTracks[0] != null && audioTracks[0] != null) {
         console.log(`Using video device: 【${videoTracks[0].label}】,enabled：【${videoTracks[0].enabled}】,muted：【${videoTracks[0].muted}】`);
         console.log(`Using audio device: 【${audioTracks[0].label}】,enabled：【${audioTracks[0].enabled}】,muted：【${audioTracks[0].muted}】`);
     }
 }
 
-function handleError(error) {
+function handleError(error, constraints) {
     let errorNode = document.getElementById("errorNote")
     errorNode.innerHTML = "【媒体错误】" + error.name;
 
@@ -109,4 +102,4 @@ let handleOnRemovetrack = function onRemovetrack(e) {
 let handleOnAddtrack = function onAddtrack(e) {
     console.error(`【事件】流轨道添加${e}`);
 }
-export { userStream as stream, getMedia }
+export { getMedia }
